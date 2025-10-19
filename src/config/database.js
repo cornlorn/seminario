@@ -7,7 +7,7 @@ if (
   !process.env.DB_HOST
 ) {
   console.error(
-    "Faltan variables de entorno necesarias para la conexión a la base de datos."
+    "Faltan variables de entorno necesarias para la conexión a la base de datos.",
   );
   process.exit(1);
 }
@@ -28,7 +28,7 @@ export async function database() {
   } catch (error) {
     console.error(
       "Se produjo un error al conectar con la base de datos:",
-      error
+      error,
     );
     process.exit(1);
   }
