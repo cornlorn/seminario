@@ -32,7 +32,7 @@ seminario/
 ├── src/
 │   ├── config/           Configuración de la base de datos
 │   ├── controladores/    Lógica de negocio
-│   ├── model0s/          Modelos de Sequelize
+│   ├── modelos/          Modelos de Sequelize
 │   ├── rutas/            Rutas de la API
 │   ├── validadores/      Middleware de validaciones
 │   └── app.js            Configuración de la app Express
@@ -54,7 +54,7 @@ git clone https://github.com/cloxious/seminario.git
 Para entrar al directorio:
 
 ```bash
-cd seminario-api
+cd seminario
 ```
 
 Para instalar las dependencias:
@@ -93,7 +93,7 @@ Para ejecutar en modo de producción:
 npm start
 ```
 
-La API estará disponible en el [puerto 3000](http://localhost:3000).
+El servidor estará disponible en el [puerto 3000](http://localhost:3000).
 
 ## 📝 Notas
 
