@@ -45,18 +45,21 @@ seminario/
 
 ## 💻 Instalación
 
+Para clonar el repositorio:
+
 ```bash
-# Clonar el repositorio
 git clone https://github.com/cloxious/seminario.git
 ```
 
+Para entrar al directorio:
+
 ```bash
-# Entrar al directorio
 cd seminario-api
 ```
 
+Para instalar las dependencias:
+
 ```bash
-# Instalar las dependencias
 npm install
 ```
 
@@ -90,14 +93,10 @@ Para ejecutar en modo de producción:
 npm start
 ```
 
-La API estará disponible en [http://localhost:3000](https://www.google.com/search?q=http://localhost:3000)
+La API estará disponible en el [puerto 3000](http://localhost:3000).
 
 ## 📝 Notas
 
-- Punto de entrada principal: `src/index.js`
+- Punto de entrada principal: `src/app.js`
 - Puerto por defecto: 3000
 - Asegúrate de que MySQL esté en ejecución antes de iniciar la aplicación.
-
-## 📄 Licencia
-
-Este proyecto es de código abierto y está disponible bajo la [Licencia MIT](LICENSE).
