@@ -25,6 +25,9 @@ export async function database() {
   try {
     await sequelize.authenticate();
     console.log("Conexión establecida correctamente con la base de datos.");
+
+    // Eliminar esta línea en producción
+    await sequelize.sync({ force: true });
   } catch (error) {
     console.error(
       "Se produjo un error al conectar con la base de datos:",
