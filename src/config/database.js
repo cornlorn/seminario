@@ -1,14 +1,7 @@
 import { Sequelize } from "sequelize";
 
-if (
-  !process.env.DB_NAME ||
-  !process.env.DB_USER ||
-  !process.env.DB_PASS ||
-  !process.env.DB_HOST
-) {
-  console.error(
-    "Faltan variables de entorno necesarias para la conexión a la base de datos.",
-  );
+if (!process.env.DB_NAME || !process.env.DB_USER || !process.env.DB_PASS || !process.env.DB_HOST) {
+  console.error("Faltan variables de entorno necesarias para la conexión a la base de datos.");
   process.exit(1);
 }
 
@@ -29,10 +22,7 @@ export async function database() {
     // Eliminar esta línea en producción
     await sequelize.sync({ force: true });
   } catch (error) {
-    console.error(
-      "Se produjo un error al conectar con la base de datos:",
-      error,
-    );
+    console.error("Se produjo un error al conectar con la base de datos:", error);
     process.exit(1);
   }
 }
