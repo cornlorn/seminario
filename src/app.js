@@ -1,5 +1,6 @@
 import "dotenv/config";
 import express from "express";
+import { crearCuentaAdmin } from "./config/cuenta.js";
 import { database } from "./config/database.js";
 import usuarioRutas from "./rutas/usuario.ruta.js";
 
@@ -9,10 +10,11 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.post("/api/usuarios", usuarioRutas);
+app.use("/api/usuarios", usuarioRutas);
 
 try {
   await database();
+  await crearCuentaAdmin();
 
   app.listen(port, () => {
     console.log(`Servidor iniciado correctamente en el puerto ${port}.`);
