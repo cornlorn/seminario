@@ -81,11 +81,28 @@ npm run biome
 Crea un archivo `.env` en el directorio raíz con el siguiente contenido:
 
 ```
+# Configuración del servidor
 PORT=
+
+# Configuración de base de datos
 DB_NAME=
 DB_USER=
 DB_PASS=
 DB_HOST=
+
+# JWT/Autenticación
+JWT_SECRET=
+
+# Credenciales de administrador
+ADMIN_EMAIL=
+ADMIN_PASSWORD=
+
+# Datos personales del administrador
+ADMIN_NOMBRE=
+ADMIN_APELLIDO=
+ADMIN_IDENTIDAD=
+ADMIN_TELEFONO=
+ADMIN_NACIMIENTO=
 ```
 
 ---
