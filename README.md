@@ -65,6 +65,17 @@ npm install
 
 ---
 
+## ✍️ Formato del código
+
+- Instalar la extensión de [Biome](https://marketplace.visualstudio.com/items?itemName=biomejs.biome) para detectar errores automaticamente.
+- Para formatear el código y buscar errores:
+
+```
+npm run biome
+```
+
+---
+
 ## ⚙️ Configuración del Entorno
 
 Crea un archivo `.env` en el directorio raíz con el siguiente contenido:
