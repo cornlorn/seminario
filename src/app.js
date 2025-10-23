@@ -5,7 +5,7 @@ import { sequelize } from "./config/database.js";
 import usuarioRutas from "./rutas/usuario.ruta.js";
 
 const app = express();
-const { PORT } = process.env;
+const PORT = process.env.PORT || 3000;
 
 app.use(morgan("dev"));
 app.use(express.json());
