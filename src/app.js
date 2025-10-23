@@ -2,7 +2,7 @@ import "dotenv/config";
 import express from "express";
 import morgan from "morgan";
 import { sequelize } from "./config/database.js";
-import usuarioRutas from "./rutas/usuario.ruta.js";
+import { rutas } from "./rutas/index.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3000;
 app.use(morgan("dev"));
 app.use(express.json());
 
-app.use("/api/usuarios", usuarioRutas);
+app.use("/api", rutas);
 
 try {
   await sequelize.authenticate();

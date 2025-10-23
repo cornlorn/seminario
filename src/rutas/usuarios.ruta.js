@@ -16,4 +16,4 @@ router.post(
 
 router.post("/ingresar", validarIngresoUsuario, ingresarUsuario);
 
-export default router;
+export { router as usuariosRutas };
