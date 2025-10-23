@@ -78,10 +78,13 @@ export const validarRegistroUsuario = [
     .bail()
     .custom((value) => {
       if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
-        throw new Error("La fecha de nacimiento debe tener el formato YYYY-MM-DD");
+        throw new Error(
+          "La fecha de nacimiento debe tener el formato YYYY-MM-DD",
+        );
       }
       const fecha = new Date(value);
-      if (Number.isNaN(fecha.getTime())) throw new Error("La fecha de nacimiento no es válida");
+      if (Number.isNaN(fecha.getTime()))
+        throw new Error("La fecha de nacimiento no es válida");
 
       const hoy = new Date();
       let edad = hoy.getFullYear() - fecha.getFullYear();

@@ -1,24 +1,28 @@
 import "dotenv/config";
 import express from "express";
-import { crearCuentaAdmin } from "./config/cuenta.js";
-import { database } from "./config/database.js";
+import morgan from "morgan";
+import { sequelize } from "./config/database.js";
 import usuarioRutas from "./rutas/usuario.ruta.js";
 
 const app = express();
-const port = process.env.PORT || 3000;
+const { PORT } = process.env;
 
+app.use(morgan("dev"));
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/usuarios", usuarioRutas);
 
 try {
-  await database();
-  await crearCuentaAdmin();
-
-  app.listen(port, () => {
-    console.log(`Servidor iniciado correctamente en el puerto ${port}.`);
+  await sequelize.authenticate();
+  await sequelize.sync({ force: true });
+  app.listen(PORT, () => {
+    console.log(`Se inició el servidor en http://localhost:${PORT}`);
   });
 } catch (error) {
-  console.error("Se produjo un error al iniciar el servidor:", error);
+  console.error("Error: No se pudo iniciar el servidor.");
+  console.error(error);
 }
+
+app.use((_request, response) => {
+  response.redirect("/api/docs");
+});

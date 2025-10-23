@@ -19,7 +19,12 @@ export const Perfil = sequelize.define(
     telefono: { type: DataTypes.STRING(8), allowNull: false },
     nacimiento: { type: DataTypes.DATEONLY, allowNull: false },
   },
-  { tableName: "perfiles", timestamps: true, createdAt: "creado", updatedAt: "actualizado" },
+  {
+    tableName: "perfiles",
+    timestamps: true,
+    createdAt: "creado",
+    updatedAt: "actualizado",
+  },
 );
 
 Perfil.belongsTo(Usuario, { foreignKey: "usuario" });
