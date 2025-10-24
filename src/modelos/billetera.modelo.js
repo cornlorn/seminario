@@ -13,9 +13,18 @@ export const Billetera = sequelize.define(
       onUpdate: "CASCADE",
       onDelete: "CASCADE",
     },
-    saldo: { type: DataTypes.DECIMAL(10, 2), allowNull: false, defaultValue: 0.0 },
+    saldo: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false,
+      defaultValue: 0.0,
+    },
   },
-  { tableName: "billeteras", timestamps: true, createdAt: "creado", updatedAt: "actualizado" },
+  {
+    tableName: "billeteras",
+    timestamps: true,
+    createdAt: "creado",
+    updatedAt: "actualizado",
+  },
 );
 
 Billetera.belongsTo(Usuario, { foreignKey: "usuario" });

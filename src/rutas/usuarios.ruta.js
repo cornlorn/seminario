@@ -7,8 +7,13 @@ import { validarRegistroUsuario } from "../validadores/usuario/registro.validado
 
 const router = Router();
 
-router.post("/registrar", verificarTokenOpcional, validarRegistroUsuario, registrarUsuario);
+router.post(
+  "/registrar",
+  verificarTokenOpcional,
+  validarRegistroUsuario,
+  registrarUsuario,
+);
 
 router.post("/ingresar", validarIngresoUsuario, ingresarUsuario);
 
-export default router;
+export { router as usuariosRutas };

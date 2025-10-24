@@ -11,13 +11,23 @@ import { Usuario } from "../../modelos/usuario.modelo.js";
 export const registrarUsuario = async (request, response) => {
   const errores = validationResult(request);
   if (!errores.isEmpty()) {
-    return response.status(400).json({ errores: errores.array().map((error) => error.msg) });
+    return response
+      .status(400)
+      .json({ errores: errores.array().map((error) => error.msg) });
   }
 
   const transaction = await sequelize.transaction();
   try {
-    const { correo, contrasena, permiso, nombre, apellido, identidad, telefono, nacimiento } =
-      request.body;
+    const {
+      correo,
+      contrasena,
+      permiso,
+      nombre,
+      apellido,
+      identidad,
+      telefono,
+      nacimiento,
+    } = request.body;
 
     if (!permiso || permiso === "cliente") {
       const usuario = await Usuario.create(
@@ -26,7 +36,14 @@ export const registrarUsuario = async (request, response) => {
       );
 
       await Perfil.create(
-        { usuario: usuario.id, nombre, apellido, identidad, telefono, nacimiento },
+        {
+          usuario: usuario.id,
+          nombre,
+          apellido,
+          identidad,
+          telefono,
+          nacimiento,
+        },
         { transaction },
       );
       await Billetera.create({ usuario: usuario.id }, { transaction });
@@ -43,19 +60,33 @@ export const registrarUsuario = async (request, response) => {
 
     if (!request.usuario) {
       await transaction.rollback();
-      return response.status(403).json({ error: "No autorizado para asignar permisos" });
+      return response
+        .status(403)
+        .json({ error: "No autorizado para asignar permisos" });
     }
 
     const solicitante = await Usuario.findByPk(request.usuario.id);
     if (!solicitante || solicitante.permiso !== "administrador") {
       await transaction.rollback();
-      return response.status(403).json({ error: "No autorizado para asignar permisos" });
+      return response
+        .status(403)
+        .json({ error: "No autorizado para asignar permisos" });
     }
 
-    const usuario = await Usuario.create({ correo, contrasena, permiso }, { transaction });
+    const usuario = await Usuario.create(
+      { correo, contrasena, permiso },
+      { transaction },
+    );
 
     await Perfil.create(
-      { usuario: usuario.id, nombre, apellido, identidad, telefono, nacimiento },
+      {
+        usuario: usuario.id,
+        nombre,
+        apellido,
+        identidad,
+        telefono,
+        nacimiento,
+      },
       { transaction },
     );
     await Billetera.create({ usuario: usuario.id }, { transaction });
