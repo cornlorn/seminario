@@ -20,5 +20,5 @@ export const swaggerOptions = {
     },
     security: [{ bearerAuth: [] }],
   },
-  apis: ["./rutas/*.js"],
+  apis: ["./src/**/*.js"],
 };
