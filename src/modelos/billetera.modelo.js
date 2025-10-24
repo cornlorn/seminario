@@ -10,7 +10,6 @@ export const Billetera = sequelize.define(
       primaryKey: true,
       allowNull: false,
       references: { model: "usuarios", key: "id" },
-      onUpdate: "CASCADE",
       onDelete: "CASCADE",
     },
     saldo: {

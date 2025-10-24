@@ -10,7 +10,6 @@ export const Perfil = sequelize.define(
       primaryKey: true,
       allowNull: false,
       references: { model: "usuarios", key: "id" },
-      onUpdate: "CASCADE",
       onDelete: "CASCADE",
     },
     nombre: { type: DataTypes.STRING(50), allowNull: false },
