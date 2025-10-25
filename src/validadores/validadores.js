@@ -42,8 +42,8 @@ export const validarRegistro = [
         .trim()
         .notEmpty()
         .withMessage("El nombre es requerido")
-        .isLength({ min: 2, max: 50 })
-        .withMessage("El nombre debe tener entre 2 y 50 caracteres")
+        .isLength({ max: 50 })
+        .withMessage("El nombre no puede exceder 50 caracteres")
         .matches(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/)
         .withMessage("El nombre solo puede contener letras y espacios"),
 
@@ -51,8 +51,8 @@ export const validarRegistro = [
         .trim()
         .notEmpty()
         .withMessage("El apellido es requerido")
-        .isLength({ min: 2, max: 50 })
-        .withMessage("El apellido debe tener entre 2 y 50 caracteres")
+        .isLength({ max: 50 })
+        .withMessage("El apellido no puede exceder 50 caracteres")
         .matches(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/)
         .withMessage("El apellido solo puede contener letras y espacios"),
 
@@ -67,8 +67,8 @@ export const validarRegistro = [
         .trim()
         .notEmpty()
         .withMessage("El teléfono es requerido")
-        .matches(/^[0-9]{8,15}$/)
-        .withMessage("El teléfono debe tener entre 8 y 15 dígitos"),
+        .matches(/^[0-9]{8}$/)
+        .withMessage("El teléfono debe tener exactamente 8 dígitos"),
 
     body("departamento")
         .optional({ nullable: true })
@@ -107,8 +107,8 @@ export const validarCreacionUsuario = [
         .trim()
         .notEmpty()
         .withMessage("El nombre es requerido para clientes")
-        .isLength({ min: 2, max: 50 })
-        .withMessage("El nombre debe tener entre 2 y 50 caracteres")
+        .isLength({ max: 50 })
+        .withMessage("El nombre no puede exceder 50 caracteres")
         .matches(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/)
         .withMessage("El nombre solo puede contener letras y espacios"),
 
@@ -117,8 +117,8 @@ export const validarCreacionUsuario = [
         .trim()
         .notEmpty()
         .withMessage("El apellido es requerido para clientes")
-        .isLength({ min: 2, max: 50 })
-        .withMessage("El apellido debe tener entre 2 y 50 caracteres")
+        .isLength({ max: 50 })
+        .withMessage("El apellido no puede exceder 50 caracteres")
         .matches(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/)
         .withMessage("El apellido solo puede contener letras y espacios"),
 
@@ -135,8 +135,8 @@ export const validarCreacionUsuario = [
         .trim()
         .notEmpty()
         .withMessage("El teléfono es requerido para clientes")
-        .matches(/^[0-9]{8,15}$/)
-        .withMessage("El teléfono debe tener entre 8 y 15 dígitos"),
+        .matches(/^[0-9]{8}$/)
+        .withMessage("El teléfono debe tener exactamente 8 dígitos"),
 
     body("departamento")
         .optional({ nullable: true })
