@@ -11,7 +11,7 @@ import { Usuario } from "../../modelos/usuario.modelo.js";
  * @param {import("express").Response} response
  */
 export const registrar = async (request, response) => {
-    const { correo, contrasena, nombre, apellido, identidad, departamento, municipio } =
+    const { correo, contrasena, nombre, apellido, identidad, telefono, departamento, municipio } =
         request.body;
 
     const transaction = await sequelize.transaction();
@@ -75,6 +75,7 @@ export const registrar = async (request, response) => {
                 nombre,
                 apellido,
                 identidad,
+                telefono,
                 departamento: departamento || null,
                 municipio: municipio || null,
             },
@@ -102,6 +103,7 @@ export const registrar = async (request, response) => {
                     nombre: clienteNuevo.nombre,
                     apellido: clienteNuevo.apellido,
                     identidad: clienteNuevo.identidad,
+                    telefono: clienteNuevo.telefono,
                     departamento: clienteNuevo.departamento,
                     municipio: clienteNuevo.municipio,
                 },

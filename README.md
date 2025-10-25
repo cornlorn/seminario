@@ -83,6 +83,7 @@ Crea un archivo `.env` en el directorio raíz con el siguiente contenido:
 ```
 # Configuración del servidor
 PORT=
+NODE_ENV=
 
 # Configuración de base de datos
 DB_NAME=

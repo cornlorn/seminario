@@ -14,6 +14,7 @@ export const Cliente = sequelize.define(
         nombre: { type: DataTypes.STRING(50), allowNull: false },
         apellido: { type: DataTypes.STRING(50), allowNull: false },
         identidad: { type: DataTypes.STRING(13), allowNull: false, unique: true },
+        telefono: { type: DataTypes.STRING(8), allowNull: false },
         departamento: {
             type: DataTypes.INTEGER,
             allowNull: true,

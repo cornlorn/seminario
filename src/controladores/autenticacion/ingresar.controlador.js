@@ -65,6 +65,7 @@ export const ingresar = async (request, response) => {
                 nombre: usuario.cliente.nombre,
                 apellido: usuario.cliente.apellido,
                 identidad: usuario.cliente.identidad,
+                telefono: usuario.cliente.telefono,
                 departamento: usuario.cliente.departamentoInfo,
                 municipio: usuario.cliente.municipioInfo,
             };

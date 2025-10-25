@@ -6,6 +6,7 @@ import swagger from "swagger-ui-express";
 import { swaggerOptions } from "../swagger.js";
 import { sequelize } from "./config/database.js";
 import { rutas } from "./rutas/index.js";
+import { cuenta } from "./utils/administrador.js";
 import "./modelos/relaciones.js";
 
 const app = express();
@@ -24,11 +25,19 @@ app.use((_request, response) => {
 
 try {
     await sequelize.authenticate();
+    console.log("Conexión a la base de datos establecida");
+
     await sequelize.sync({ force: true });
+    console.log("Modelos sincronizados");
+
+    await cuenta();
+
     app.listen(PORT, () => {
-        console.log(`Se inició el servidor en http://localhost:${PORT}`);
+        console.log(`Servidor iniciado en http://localhost:${PORT}`);
+        console.log(`Documentación API: http://localhost:${PORT}/api/docs`);
     });
 } catch (error) {
     console.error("Error: No se pudo iniciar el servidor.");
     console.error(error);
+    process.exit(1);
 }

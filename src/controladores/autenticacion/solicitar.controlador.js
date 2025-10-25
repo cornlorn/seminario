@@ -31,15 +31,14 @@ export const solicitar = async (request, response) => {
 
         const respuesta = { mensaje: "Si el correo existe, recibirás un código de recuperación" };
 
-        // Solo retornar código en desarrollo
         if (process.env.NODE_ENV === "development") {
             respuesta.codigo = codigo;
             respuesta.expira = expiracion.toLocaleString("es-HN", {
                 timeZone: "America/Tegucigalpa",
             });
-            console.log(`\n📧 Código de recuperación para ${correo}:`);
-            console.log(`   Código: ${codigo}`);
-            console.log(`   Expira: ${expiracion.toLocaleString("es-HN")}\n`);
+            console.log(`Código de recuperación para ${correo}:`);
+            console.log(`Código: ${codigo}`);
+            console.log(`Expira: ${expiracion.toLocaleString("es-HN")}`);
         }
 
         response.send(respuesta);

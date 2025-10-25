@@ -27,7 +27,7 @@ export const restablecer = async (request, response) => {
         usuario.expiracion = null;
         await usuario.save();
 
-        console.log(`✓ Contraseña restablecida para: ${usuario.correo}`);
+        console.log(`Contraseña restablecida para: ${usuario.correo}`);
 
         response.send({ mensaje: "Contraseña restablecida exitosamente" });
     } catch (error) {
