@@ -10,105 +10,84 @@ import { Usuario } from "../modelos/usuario.modelo.js";
  * @param {import("express").Response} response
  */
 export const registrar = async (request, response) => {
-  const errores = validationResult(request);
-  if (!errores.isEmpty()) {
-    return response
-      .status(400)
-      .json({ errores: errores.array().map((error) => error.msg) });
-  }
-
-  let { correo, contrasena, permiso } = request.body;
-  let { nombre, apellido, identidad, telefono, nacimiento } = request.body;
-
-  correo = correo?.trim().toLowerCase();
-  permiso = permiso?.trim();
-  nombre = nombre?.trim();
-  apellido = apellido?.trim();
-  identidad = identidad?.trim();
-  telefono = telefono?.trim();
-
-  try {
-    const usuarioExistentePorCorreo = await Usuario.findOne({
-      where: { correo },
-    });
-    if (usuarioExistentePorCorreo) {
-      return response
-        .status(409)
-        .json({ mensaje: "El correo electrónico ya está registrado." });
+    const errores = validationResult(request);
+    if (!errores.isEmpty()) {
+        return response.status(400).json({ errores: errores.array().map((error) => error.msg) });
     }
 
-    const perfilExistentePorIdentidad = await Perfil.findOne({
-      where: { identidad },
-    });
-    if (perfilExistentePorIdentidad) {
-      return response
-        .status(409)
-        .json({ mensaje: "El número de identidad ya está registrado." });
-    }
+    let { correo, contrasena, permiso } = request.body;
+    let { nombre, apellido, identidad, telefono, nacimiento } = request.body;
 
-    const transaccion = await sequelize.transaction();
+    correo = correo?.trim().toLowerCase();
+    permiso = permiso?.trim();
+    nombre = nombre?.trim();
+    apellido = apellido?.trim();
+    identidad = identidad?.trim();
+    telefono = telefono?.trim();
 
     try {
-      if (permiso && permiso !== "Cliente" && !request.permiso) {
-        await transaccion.rollback();
-        return response
-          .status(403)
-          .json({ mensaje: "No tienes autorización para asignar permisos." });
-      }
+        const usuarioExistentePorCorreo = await Usuario.findOne({ where: { correo } });
+        if (usuarioExistentePorCorreo) {
+            return response
+                .status(409)
+                .json({ mensaje: "El correo electrónico ya está registrado." });
+        }
 
-      const usuario = await Usuario.create(
-        { correo, contrasena, permiso: permiso || "Cliente" },
-        { transaction: transaccion },
-      );
+        const perfilExistentePorIdentidad = await Perfil.findOne({ where: { identidad } });
+        if (perfilExistentePorIdentidad) {
+            return response
+                .status(409)
+                .json({ mensaje: "El número de identidad ya está registrado." });
+        }
 
-      if (!permiso || permiso === "Cliente") {
-        await Perfil.create(
-          {
-            usuario: usuario.id,
-            nombre,
-            apellido,
-            identidad,
-            telefono,
-            nacimiento,
-          },
-          { transaction: transaccion },
-        );
-      }
+        const transaccion = await sequelize.transaction();
 
-      if (!permiso || permiso === "Cliente") {
-        await Billetera.create(
-          { usuario: usuario.id, saldo: 0.0 },
-          { transaction: transaccion },
-        );
-      }
+        try {
+            if (permiso && permiso !== "Cliente" && !request.permiso) {
+                await transaccion.rollback();
+                return response
+                    .status(403)
+                    .json({ mensaje: "No tienes autorización para asignar permisos." });
+            }
 
-      await transaccion.commit();
+            const usuario = await Usuario.create(
+                { correo, contrasena, permiso: permiso || "Cliente" },
+                { transaction: transaccion },
+            );
 
-      return response
-        .status(201)
-        .json({
-          mensaje: `${permiso || "Cliente"} creado exitosamente.`,
-          usuario: {
-            id: usuario.id,
-            correo: usuario.correo,
-            permiso: usuario.permiso,
-          },
-        });
+            if (!permiso || permiso === "Cliente") {
+                await Perfil.create(
+                    { usuario: usuario.id, nombre, apellido, identidad, telefono, nacimiento },
+                    { transaction: transaccion },
+                );
+            }
+
+            if (!permiso || permiso === "Cliente") {
+                await Billetera.create(
+                    { usuario: usuario.id, saldo: 0.0 },
+                    { transaction: transaccion },
+                );
+            }
+
+            await transaccion.commit();
+
+            return response
+                .status(201)
+                .json({
+                    mensaje: `${permiso || "Cliente"} creado exitosamente.`,
+                    usuario: { id: usuario.id, correo: usuario.correo, permiso: usuario.permiso },
+                });
+        } catch (error) {
+            await transaccion.rollback();
+            console.error("Error en la transacción:", error);
+            return response
+                .status(500)
+                .json({ mensaje: "Error al registrar el usuario. Intenta nuevamente." });
+        }
     } catch (error) {
-      await transaccion.rollback();
-      console.error("Error en la transacción:", error);
-      return response
-        .status(500)
-        .json({
-          mensaje: "Error al registrar el usuario. Intenta nuevamente.",
-        });
+        console.error("Error al registrar el usuario:", error);
+        return response.status(500).json({ mensaje: "Error interno del servidor." });
     }
-  } catch (error) {
-    console.error("Error al registrar el usuario:", error);
-    return response
-      .status(500)
-      .json({ mensaje: "Error interno del servidor." });
-  }
 };
 
 /**
@@ -116,56 +95,44 @@ export const registrar = async (request, response) => {
  * @param {import("express").Response} response
  */
 export const ingresar = async (request, response) => {
-  const errores = validationResult(request);
-  if (!errores.isEmpty()) {
-    return response
-      .status(400)
-      .json({ errores: errores.array().map((error) => error.msg) });
-  }
-
-  let { correo, contrasena } = request.body;
-
-  correo = correo?.trim().toLowerCase();
-
-  try {
-    const usuario = await Usuario.findOne({ where: { correo } });
-
-    if (!usuario) {
-      return response
-        .status(401)
-        .json({ mensaje: "Credenciales incorrectas." });
+    const errores = validationResult(request);
+    if (!errores.isEmpty()) {
+        return response.status(400).json({ errores: errores.array().map((error) => error.msg) });
     }
 
-    const contrasenaValida = await usuario.validarContrasena(contrasena);
+    let { correo, contrasena } = request.body;
 
-    if (!contrasenaValida) {
-      return response
-        .status(401)
-        .json({ mensaje: "Credenciales incorrectas." });
+    correo = correo?.trim().toLowerCase();
+
+    try {
+        const usuario = await Usuario.findOne({ where: { correo } });
+
+        if (!usuario) {
+            return response.status(401).json({ mensaje: "Credenciales incorrectas." });
+        }
+
+        const contrasenaValida = await usuario.validarContrasena(contrasena);
+
+        if (!contrasenaValida) {
+            return response.status(401).json({ mensaje: "Credenciales incorrectas." });
+        }
+
+        const token = jwt.sign(
+            { id: usuario.id, correo: usuario.correo, permiso: usuario.permiso },
+            process.env.JWT_SECRET,
+            { expiresIn: "24h" },
+        );
+
+        return response
+            .status(200)
+            .json({
+                mensaje: "Inicio de sesión exitoso.",
+                usuario: { id: usuario.id, correo: usuario.correo, permiso: usuario.permiso },
+                token,
+            });
+    } catch (error) {
+        console.error("Error: No se pudo iniciar sesión.");
+        console.error(error);
+        return response.status(500).json({ mensaje: "Error interno del servidor." });
     }
-
-    const token = jwt.sign(
-      { id: usuario.id, correo: usuario.correo, permiso: usuario.permiso },
-      process.env.JWT_SECRET,
-      { expiresIn: "24h" },
-    );
-
-    return response
-      .status(200)
-      .json({
-        mensaje: "Inicio de sesión exitoso.",
-        usuario: {
-          id: usuario.id,
-          correo: usuario.correo,
-          permiso: usuario.permiso,
-        },
-        token,
-      });
-  } catch (error) {
-    console.error("Error: No se pudo iniciar sesión.");
-    console.error(error);
-    return response
-      .status(500)
-      .json({ mensaje: "Error interno del servidor." });
-  }
 };
