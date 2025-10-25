@@ -4,10 +4,11 @@ import morgan from "morgan";
 import swaggerJSDoc from "swagger-jsdoc";
 import swagger from "swagger-ui-express";
 import { swaggerOptions } from "../swagger.js";
+import { correo } from "./config/correo.config.js";
 import { sequelize } from "./config/database.js";
+import "./modelos/relaciones.js";
 import { rutas } from "./rutas/index.js";
 import { cuenta } from "./utils/administrador.js";
-import "./modelos/relaciones.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -30,6 +31,7 @@ try {
     await sequelize.sync({ force: true });
     console.log("Modelos sincronizados");
 
+    await correo();
     await cuenta();
 
     app.listen(PORT, () => {

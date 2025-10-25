@@ -5,6 +5,7 @@ import { Cliente } from "../../modelos/cliente.modelo.js";
 import { Departamento } from "../../modelos/departamento.modelo.js";
 import { Municipio } from "../../modelos/municipio.modelo.js";
 import { Usuario } from "../../modelos/usuario.modelo.js";
+import { enviarCredencialesNuevaCuenta } from "../../servicios/correo.servicio.js";
 
 const generarContrasena = () => {
     const mayusculas = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -159,6 +160,8 @@ export const crearUsuario = async (request, response) => {
         console.log(`Tipo: ${permiso}`);
         console.log(`Correo: ${correo}`);
         console.log(`Contraseña: ${contrasenaGenerada}`);
+
+        await enviarCredencialesNuevaCuenta(correo, contrasenaGenerada, permiso);
 
         response.status(201).json(respuesta);
     } catch (error) {

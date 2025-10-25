@@ -5,6 +5,7 @@ import { Cliente } from "../../modelos/cliente.modelo.js";
 import { Departamento } from "../../modelos/departamento.modelo.js";
 import { Municipio } from "../../modelos/municipio.modelo.js";
 import { Usuario } from "../../modelos/usuario.modelo.js";
+import { enviarBienvenidaCliente } from "../../servicios/correo.servicio.js";
 
 /**
  * @param {import("express").Request} request
@@ -88,6 +89,8 @@ export const registrar = async (request, response) => {
         );
 
         await transaction.commit();
+
+        await enviarBienvenidaCliente(correo, nombre);
 
         response
             .status(201)

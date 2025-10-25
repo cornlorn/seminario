@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import { Op } from "sequelize";
 import { Usuario } from "../../modelos/relaciones.js";
+import { enviarConfirmacionRestablecimiento } from "../../servicios/correo.servicio.js";
 
 /**
  * @param {import("express").Request} request
@@ -28,6 +29,8 @@ export const restablecer = async (request, response) => {
         await usuario.save();
 
         console.log(`Contraseña restablecida para: ${usuario.correo}`);
+
+        await enviarConfirmacionRestablecimiento(usuario.correo);
 
         response.send({ mensaje: "Contraseña restablecida exitosamente" });
     } catch (error) {

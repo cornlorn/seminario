@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import { Usuario } from "../../modelos/relaciones.js";
+import { enviarCodigoRecuperacion } from "../../servicios/correo.servicio.js";
 
 /**
  * @param {import("express").Request} request
@@ -26,8 +27,7 @@ export const solicitar = async (request, response) => {
         usuario.expiracion = expiracion;
         await usuario.save();
 
-        // 🔔 AQUÍ integrar servicio de email
-        // await enviarCorreoRecuperacion(correo, codigo);
+        await enviarCodigoRecuperacion(correo, codigo, expiracion);
 
         const respuesta = { mensaje: "Si el correo existe, recibirás un código de recuperación" };
 
