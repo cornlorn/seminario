@@ -6,35 +6,39 @@ const plantillaBase = (contenido) => `
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             line-height: 1.6;
-            color: #333;
+            color: #333; /* Texto principal (casi negro) */
+            background-color: #ffffff; /* Fondo del correo */
             max-width: 600px;
             margin: 0 auto;
             padding: 20px;
+            width: 100%;
+            box-sizing: border-box;
         }
         .container {
-            background-color: #f9f9f9;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            background-color: #f4f4f4; /* Gris claro */
+            border: 1px solid #cccccc; /* Borde gris */
+            padding: 0;
+            margin: 0;
         }
         .header {
-            background-color: #4CAF50;
-            color: white;
-            padding: 20px;
-            border-radius: 10px 10px 0 0;
+            background-color: #000000; /* Negro */
+            color: #ffffff; /* Blanco */
+            padding: 20px 30px;
             text-align: center;
         }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
         .content {
-            background-color: white;
+            background-color: #ffffff; /* Blanco */
             padding: 30px;
-            border-radius: 0 0 10px 10px;
         }
         .code-box {
-            background-color: #e8f5e9;
-            border: 2px solid #4CAF50;
-            border-radius: 5px;
+            background-color: #f4f4f4; /* Gris claro */
+            border: 1px solid #cccccc; /* Borde gris */
             padding: 20px;
             text-align: center;
             margin: 20px 0;
@@ -42,25 +46,24 @@ const plantillaBase = (contenido) => `
         .code {
             font-size: 32px;
             font-weight: bold;
-            color: #2e7d32;
+            color: #000000; /* Negro */
             letter-spacing: 5px;
         }
         .credentials-box {
-            background-color: #fff3e0;
-            border: 2px solid #ff9800;
-            border-radius: 5px;
+            background-color: #f4f4f4; /* Gris claro */
+            border: 1px solid #cccccc; /* Borde gris */
             padding: 20px;
             margin: 20px 0;
         }
         .credential-item {
             margin: 10px 0;
             padding: 10px;
-            background-color: white;
-            border-radius: 5px;
+            background-color: #ffffff; /* Blanco */
+            border: 1px solid #eeeeee;
         }
         .credential-label {
             font-weight: bold;
-            color: #f57c00;
+            color: #000000; /* Negro */
         }
         .credential-value {
             font-family: monospace;
@@ -68,25 +71,49 @@ const plantillaBase = (contenido) => `
             color: #333;
         }
         .warning {
-            background-color: #fff3cd;
-            border-left: 4px solid #ffc107;
+            background-color: #f4f4f4; /* Gris claro */
+            border-left: 4px solid #333333; /* Borde oscuro */
             padding: 15px;
             margin: 20px 0;
+        }
+        .warning ul {
+            margin: 5px 0 0 20px;
+            padding: 0;
         }
         .footer {
             text-align: center;
             margin-top: 30px;
-            color: #666;
+            color: #666; /* Gris oscuro */
             font-size: 12px;
         }
         .button {
             display: inline-block;
             padding: 12px 30px;
-            background-color: #4CAF50;
-            color: white;
+            background-color: #000000; /* Negro */
+            color: #ffffff; /* Blanco */
             text-decoration: none;
-            border-radius: 5px;
             margin: 20px 0;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #333333; /* Gris más oscuro al pasar el ratón */
+        }
+        p {
+            margin: 0 0 15px 0;
+        }
+
+        /* Estilos responsivos */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .header {
+                padding: 15px 20px;
+            }
+            .content {
+                padding: 20px;
+            }
         }
     </style>
 </head>
@@ -104,7 +131,7 @@ export const plantillaCodigoRecuperacion = (codigo, expiracion) => {
     const contenido = `
         <div class="container">
             <div class="header">
-                <h1>🔐 Recuperación de Contraseña</h1>
+                <h1>Recuperación de Contraseña</h1>
             </div>
             <div class="content">
                 <p>Hola,</p>
@@ -112,7 +139,7 @@ export const plantillaCodigoRecuperacion = (codigo, expiracion) => {
                 
                 <div class="code-box">
                     <div class="code">${codigo}</div>
-                    <p style="margin-top: 10px; color: #666;">Este código expira en 15 minutos</p>
+                    <p style="margin-top: 10px; margin-bottom: 0; color: #666;">Este código expira en 15 minutos</p>
                 </div>
 
                 <p><strong>Expira:</strong> ${expiracion}</p>
@@ -137,14 +164,14 @@ export const plantillaCuentaCreada = (correo, contrasena, permiso) => {
     const contenido = `
         <div class="container">
             <div class="header">
-                <h1>🎉 ¡Bienvenido al Sistema!</h1>
+                <h1>¡Bienvenido al Sistema!</h1>
             </div>
             <div class="content">
                 <p>Hola,</p>
                 <p>Un administrador ha creado una cuenta para ti en nuestro sistema.</p>
                 
                 <div class="credentials-box">
-                    <h3 style="margin-top: 0; color: #f57c00;">Tus Credenciales de Acceso</h3>
+                    <h3 style="margin-top: 0; color: #000000;">Tus Credenciales de Acceso</h3>
                     
                     <div class="credential-item">
                         <span class="credential-label">📧 Correo:</span><br>
@@ -186,14 +213,14 @@ export const plantillaBienvenidaCliente = (nombre, correo) => {
     const contenido = `
         <div class="container">
             <div class="header">
-                <h1>🎊 ¡Bienvenido ${nombre}!</h1>
+                <h1>¡Bienvenido ${nombre}!</h1>
             </div>
             <div class="content">
                 <p>Hola <strong>${nombre}</strong>,</p>
                 <p>¡Gracias por registrarte en nuestro sistema! Tu cuenta ha sido creada exitosamente.</p>
                 
                 <div class="credentials-box">
-                    <h3 style="margin-top: 0; color: #f57c00;">Detalles de tu Cuenta</h3>
+                    <h3 style="margin-top: 0; color: #000000;">Detalles de tu Cuenta</h3>
                     
                     <div class="credential-item">
                         <span class="credential-label">📧 Correo registrado:</span><br>
@@ -223,7 +250,7 @@ export const plantillaContrasenaRestablecida = (correo) => {
     const contenido = `
         <div class="container">
             <div class="header">
-                <h1>✅ Contraseña Restablecida</h1>
+                <h1>Contraseña Restablecida</h1>
             </div>
             <div class="content">
                 <p>Hola,</p>
@@ -247,7 +274,7 @@ export const plantillaContrasenaRestablecida = (correo) => {
 
                 <div class="warning">
                     <strong>⚠️ ¿No fuiste tú?</strong>
-                    <p>Si no solicitaste este cambio, contacta inmediatamente a soporte para asegurar tu cuenta.</p>
+                    <p style="margin-bottom: 0;">Si no solicitaste este cambio, contacta inmediatamente a soporte para asegurar tu cuenta.</p>
                 </div>
             </div>
         </div>
@@ -259,14 +286,14 @@ export const plantillaInicioSesion = (correo, permiso, dispositivo, ubicacion, f
     const contenido = `
         <div class="container">
             <div class="header">
-                <h1>🔓 Nuevo Inicio de Sesión</h1>
+                <h1>Nuevo Inicio de Sesión</h1>
             </div>
             <div class="content">
                 <p>Hola,</p>
                 <p>Se ha detectado un nuevo inicio de sesión en tu cuenta.</p>
                 
                 <div class="credentials-box">
-                    <h3 style="margin-top: 0; color: #f57c00;">Detalles del Acceso</h3>
+                    <h3 style="margin-top: 0; color: #000000;">Detalles del Acceso</h3>
                     
                     <div class="credential-item">
                         <span class="credential-label">📧 Cuenta:</span><br>
@@ -296,7 +323,7 @@ export const plantillaInicioSesion = (correo, permiso, dispositivo, ubicacion, f
 
                 <div class="warning">
                     <strong>⚠️ ¿No fuiste tú?</strong>
-                    <p>Si no reconoces este inicio de sesión, tu cuenta podría estar comprometida.</p>
+                    <p style="margin-bottom: 0;">Si no reconoces este inicio de sesión, tu cuenta podría estar comprometida.</p>
                     <ul>
                         <li>Cambia tu contraseña inmediatamente</li>
                         <li>Contacta a soporte lo antes posible</li>
