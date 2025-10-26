@@ -83,6 +83,7 @@ Crea un archivo `.env` en el directorio raíz con el siguiente contenido:
 ```
 # Configuración del servidor
 PORT=
+NODE_ENV=
 
 # Configuración de base de datos
 DB_NAME=
@@ -93,16 +94,21 @@ DB_HOST=
 # JWT/Autenticación
 JWT_SECRET=
 
-# Credenciales de administrador
+# Datos personales del administrador
 ADMIN_EMAIL=
 ADMIN_PASSWORD=
 
-# Datos personales del administrador
-ADMIN_NOMBRE=
-ADMIN_APELLIDO=
-ADMIN_IDENTIDAD=
-ADMIN_TELEFONO=
-ADMIN_NACIMIENTO=
+# Email
+EMAIL_HOST=
+EMAIL_PORT=
+EMAIL_SECURE=
+EMAIL_USER=
+EMAIL_PASSWORD=
+EMAIL_FROM=
+EMAIL_FROM_NAME=
+
+# URL de la app
+APP_URL=
 ```
 
 ---
