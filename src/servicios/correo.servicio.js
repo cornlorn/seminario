@@ -4,6 +4,7 @@ import {
     plantillaCodigoRecuperacion,
     plantillaContrasenaRestablecida,
     plantillaCuentaCreada,
+    plantillaInicioSesion,
 } from "./plantillas.correo.js";
 
 /**
@@ -103,4 +104,64 @@ export const enviarConfirmacionRestablecimiento = async (correo) => {
         console.error(error);
         return { exito: false, error: error.message };
     }
+};
+
+/**
+ * @param {string} correo
+ * @param {string} permiso
+ * @param {string} userAgent
+ * @param {string} ip
+ */
+export const enviarNotificacionInicioSesion = async (correo, permiso, userAgent, ip) => {
+    try {
+        const dispositivo = obtenerDispositivo(userAgent);
+
+        const ubicacion =
+            ip === "::1" || ip === "127.0.0.1" ? "Localhost (Desarrollo)" : `IP: ${ip}`;
+
+        const fecha = new Date().toLocaleString("es-HN", {
+            timeZone: "America/Tegucigalpa",
+            dateStyle: "full",
+            timeStyle: "long",
+        });
+
+        const opciones = {
+            ...opcionesBaseEmail,
+            to: correo,
+            subject: "Nuevo Inicio de Sesión Detectado",
+            html: plantillaInicioSesion(correo, permiso, dispositivo, ubicacion, fecha),
+        };
+
+        await transportador.sendMail(opciones);
+        console.log(`Notificación de inicio de sesión enviada a: ${correo}`);
+        return { exito: true };
+    } catch (error) {
+        console.error(`Error al enviar notificación de inicio de sesión a ${correo}:`);
+        console.error(error);
+        return { exito: false, error: error.message };
+    }
+};
+
+/**
+ * @param {string} userAgent
+ * @returns {string} Información del dispositivo
+ */
+const obtenerDispositivo = (userAgent) => {
+    if (!userAgent) return "Dispositivo desconocido";
+
+    let os = "Desconocido";
+    if (userAgent.includes("Windows")) os = "Windows";
+    else if (userAgent.includes("Mac")) os = "macOS";
+    else if (userAgent.includes("Linux")) os = "Linux";
+    else if (userAgent.includes("Android")) os = "Android";
+    else if (userAgent.includes("iOS") || userAgent.includes("iPhone")) os = "iOS";
+
+    let browser = "Desconocido";
+    if (userAgent.includes("Chrome") && !userAgent.includes("Edg")) browser = "Chrome";
+    else if (userAgent.includes("Firefox")) browser = "Firefox";
+    else if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) browser = "Safari";
+    else if (userAgent.includes("Edg")) browser = "Edge";
+    else if (userAgent.includes("Postman")) browser = "Postman";
+
+    return `${browser} en ${os}`;
 };

@@ -254,3 +254,61 @@ export const plantillaContrasenaRestablecida = (correo) => {
     `;
     return plantillaBase(contenido);
 };
+
+export const plantillaInicioSesion = (correo, permiso, dispositivo, ubicacion, fecha) => {
+    const contenido = `
+        <div class="container">
+            <div class="header">
+                <h1>🔓 Nuevo Inicio de Sesión</h1>
+            </div>
+            <div class="content">
+                <p>Hola,</p>
+                <p>Se ha detectado un nuevo inicio de sesión en tu cuenta.</p>
+                
+                <div class="credentials-box">
+                    <h3 style="margin-top: 0; color: #f57c00;">Detalles del Acceso</h3>
+                    
+                    <div class="credential-item">
+                        <span class="credential-label">📧 Cuenta:</span><br>
+                        <span class="credential-value">${correo}</span>
+                    </div>
+                    
+                    <div class="credential-item">
+                        <span class="credential-label">👤 Tipo de usuario:</span><br>
+                        <span class="credential-value">${permiso}</span>
+                    </div>
+                    
+                    <div class="credential-item">
+                        <span class="credential-label">🕐 Fecha y hora:</span><br>
+                        <span class="credential-value">${fecha}</span>
+                    </div>
+                    
+                    <div class="credential-item">
+                        <span class="credential-label">💻 Dispositivo:</span><br>
+                        <span class="credential-value">${dispositivo}</span>
+                    </div>
+                    
+                    <div class="credential-item">
+                        <span class="credential-label">📍 Ubicación aproximada:</span><br>
+                        <span class="credential-value">${ubicacion}</span>
+                    </div>
+                </div>
+
+                <div class="warning">
+                    <strong>⚠️ ¿No fuiste tú?</strong>
+                    <p>Si no reconoces este inicio de sesión, tu cuenta podría estar comprometida.</p>
+                    <ul>
+                        <li>Cambia tu contraseña inmediatamente</li>
+                        <li>Contacta a soporte lo antes posible</li>
+                        <li>Revisa la actividad reciente de tu cuenta</li>
+                    </ul>
+                </div>
+
+                <p>Si fuiste tú quien inició sesión, puedes ignorar este correo.</p>
+                
+                <p><strong>Nota de seguridad:</strong> Nunca compartas tu contraseña con nadie y asegúrate de cerrar sesión en dispositivos compartidos.</p>
+            </div>
+        </div>
+    `;
+    return plantillaBase(contenido);
+};

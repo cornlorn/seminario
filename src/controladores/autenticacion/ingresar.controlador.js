@@ -5,6 +5,7 @@ import { Cliente } from "../../modelos/cliente.modelo.js";
 import { Departamento } from "../../modelos/departamento.modelo.js";
 import { Municipio } from "../../modelos/municipio.modelo.js";
 import { Usuario } from "../../modelos/usuario.modelo.js";
+import { enviarNotificacionInicioSesion } from "../../servicios/correo.servicio.js";
 
 /**
  * @param {import("express").Request} request
@@ -72,6 +73,10 @@ export const ingresar = async (request, response) => {
 
             respuesta.billetera = { saldo: usuario.billetera?.saldo || 0.0 };
         }
+
+        const userAgent = request.headers["user-agent"] || "Desconocido";
+        const ip = request.ip || request.connection.remoteAddress || "Desconocida";
+        await enviarNotificacionInicioSesion(correo, usuario.permiso, userAgent, ip);
 
         response.send(respuesta);
     } catch (error) {
