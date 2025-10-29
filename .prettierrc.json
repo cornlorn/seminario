@@ -1,1 +1,6 @@
-{ "endOfLine": "lf", "printWidth": 100, "tabWidth": 4, "objectWrap": "collapse" }
+{
+  "printWidth": 80,
+  "tabWidth": 2,
+  "objectWrap": "collapse",
+  "singleQuote": true
+}
