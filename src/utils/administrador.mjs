@@ -1,36 +1,28 @@
 import bcrypt from 'bcrypt';
-import { Usuario } from '../modelos/usuario.modelo.mjs';
-import { Administrador } from '../modelos/administrador.modelo.mjs';
 import { sequelize } from '../configuraciones/database.mjs';
+import { Administrador } from '../modelos/administrador.modelo.mjs';
+import { Usuario } from '../modelos/usuario.modelo.mjs';
 
-if (
-  !process.env.ADMIN_USER ||
-  !process.env.ADMIN_PASS ||
-  !process.env.ADMIN_NAME ||
-  !process.env.ADMIN_SURNAME
-) {
+const { ADMIN_USER, ADMIN_PASS, ADMIN_NAME, ADMIN_SURNAME } = process.env;
+
+if (!ADMIN_USER || !ADMIN_PASS || !ADMIN_NAME || !ADMIN_SURNAME) {
   console.error(
     'Error: Faltan variables de entorno para la cuenta de administrador por defecto',
   );
   process.exit(1);
 }
 
-const { ADMIN_USER, ADMIN_PASS, ADMIN_NAME, ADMIN_SURNAME } = process.env;
-
 export const administrador = async () => {
   try {
-    const administradorExistente = await Usuario.findOne({
-      where: { rol: 'Administrador' },
-    });
+    const [adminExistente, usuarioExistente] = await Promise.all([
+      Usuario.findOne({ where: { rol: 'Administrador' } }),
+      Usuario.findOne({ where: { correo: ADMIN_USER } }),
+    ]);
 
-    if (administradorExistente) {
+    if (adminExistente) {
       console.log('Ya existe al menos un administrador en el sistema');
       return;
     }
-
-    const usuarioExistente = await Usuario.findOne({
-      where: { correo: ADMIN_USER },
-    });
 
     if (usuarioExistente) {
       console.log(
@@ -39,9 +31,7 @@ export const administrador = async () => {
       return;
     }
 
-    const transaccion = await sequelize.transaction();
-
-    try {
+    await sequelize.transaction(async (transaccion) => {
       const usuarioUUID = crypto.randomUUID();
 
       await Usuario.create(
@@ -63,12 +53,7 @@ export const administrador = async () => {
         },
         { transaction: transaccion },
       );
-
-      await transaccion.commit();
-    } catch (error) {
-      await transaccion.rollback();
-      throw error;
-    }
+    });
   } catch (error) {
     console.error('Error: No se pudo crear el administrador por defecto');
     console.error(error.message);
