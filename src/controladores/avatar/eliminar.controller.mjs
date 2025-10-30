@@ -6,7 +6,7 @@ import { Jugador } from '../../modelos/index.mjs';
  * @param {import("express").Request} request
  * @param {import("express").Response} response
  */
-export const eliminarAvatar = async (request, response) => {
+export const eliminar = async (request, response) => {
   try {
     const directorio = path.join(
       process.cwd(),
