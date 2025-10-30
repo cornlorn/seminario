@@ -1,136 +1,86 @@
-# 👨‍💻 Seminario: Taller de Software
+# 🎯 Seminario: Taller de Software
 
-Una API de **Express.js** que opera la lógica de una app de lotería.
-
----
-
-## 🚀 Características
-
-- Endpoints de API RESTful para todas las operaciones CRUD
-- **ORM Sequelize** con integración **MySQL**
-- Entornos configurables usando .env
-- Estructura MVC modular (`src/modelos`, `src/controladores`, `src/rutas`)
-- Manejo de errores centralizado
-- Scripts preconfigurados para desarrollo y producción
+API REST construida con **Express.js** y **Sequelize** para la gestión de una aplicación de lotería.  
+Incluye autenticación JWT, manejo de usuarios, administración, carga de avatares, envío de correos y documentación OpenAPI.
 
 ---
 
-## 🧱 Stack Tecnológico
+## 🚀 Descripción general
 
-- **Node.js** — Entorno de ejecución
-- **Express.js** — Framework web
-- **Sequelize** — ORM para MySQL
-- **MySQL** — Base de datos relacional
-- **dotenv** — Gestión de variables de entorno
-
----
-
-## 🧩 Estructura del Proyecto
-
-```
-seminario/
-├── src/
-│   ├── config/           Configuración de la base de datos
-│   ├── controladores/    Lógica de negocio
-│   ├── modelos/          Modelos de Sequelize
-│   ├── rutas/            Rutas de la API
-│   ├── validadores/      Middleware de validaciones
-│   └── app.js            Configuración de la app Express
-│
-├── package.json          Dependencias y scripts
-└── README.md             Documentación del proyecto
-```
+- **Framework principal:** Express.js
+- **Base de datos:** Sequelize ORM (MySQL)
+- **Autenticación:** JWT con middlewares de validación
+- **Documentación:** OpenAPI (Swagger)
+- **Email:** Nodemailer con plantillas dinámicas
+- **Archivos:** Subida y manejo de avatares con Multer
 
 ---
 
-## 💻 Instalación
+Archivos raíz relevantes:
 
-Para clonar el repositorio:
-
-```bash
-git clone https://github.com/cloxious/seminario.git
-```
-
-Para entrar al directorio:
-
-```bash
-cd seminario
-```
-
-Para instalar las dependencias:
-
-```bash
-npm install
-```
+- [`swagger.mjs`](swagger.mjs) — Configuración de la documentación OpenAPI
+- [`package.json`](package.json) — Scripts y dependencias
+- [`.env`](.env) — Variables de entorno
 
 ---
 
-## ✍️ Formato del código
+## ⚙️ Variables de entorno
 
-- Instalar la extensión de [Biome](https://marketplace.visualstudio.com/items?itemName=biomejs.biome) para detectar errores automaticamente.
-- Para formatear el código y buscar errores:
+Ejemplo de configuración mínima en `.env`:
 
-```
-npm run biome
-```
-
----
-
-## ⚙️ Configuración del Entorno
-
-Crea un archivo `.env` en el directorio raíz con el siguiente contenido:
-
-```
-# Configuración del servidor
-PORT=
-NODE_ENV=
-
-# Configuración de base de datos
+```env
+# Base de datos
 DB_NAME=
 DB_USER=
 DB_PASS=
 DB_HOST=
 
-# JWT/Autenticación
+# JWT
 JWT_SECRET=
 
-# Datos personales del administrador
-ADMIN_EMAIL=
-ADMIN_PASSWORD=
+# Administrador por defecto
+ADMIN_USER=
+ADMIN_PASS=
+ADMIN_NAME=
+ADMIN_SURNAME=
 
-# Email
+# Correo electrónico
 EMAIL_HOST=
 EMAIL_PORT=
-EMAIL_SECURE=
 EMAIL_USER=
-EMAIL_PASSWORD=
-EMAIL_FROM=
-EMAIL_FROM_NAME=
+EMAIL_PASS=
 
-# URL de la app
-APP_URL=
+# Servidor
+PORT=
 ```
 
 ---
 
-## 🏃‍♂️ Ejecutando el Servidor
+## 🧩 Scripts disponibles
 
-Para iniciar el servidor de desarrollo:
+Instalar dependencias:
 
+```bash
+npm install
 ```
+
+Modo desarrollo:
+
+```bash
 npm run dev
 ```
 
-Para ejecutar en modo de producción:
+Modo producción:
 
-```
+```bash
 npm start
 ```
 
-El servidor estará disponible en el [puerto 3000](http://localhost:3000).
+---
 
-## 📝 Notas
+## 🧠 Notas útiles
 
-- Punto de entrada principal: `src/app.js`
-- Puerto por defecto: 3000
-- Asegúrate de que MySQL esté en ejecución antes de iniciar la aplicación.
+- Los archivos subidos se almacenan en `public/usuarios/<id>`
+- El servidor expone `/public` como ruta estática
+- Si algo falla en el arranque, revisa que las variables `.env` estén completas
+- Las relaciones entre modelos están definidas en [`src/modelos/index.mjs`](src/modelos/index.mjs)

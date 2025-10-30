@@ -128,7 +128,7 @@ const plantillaBase = (contenido) => `
 `;
 
 export const plantillaCodigoRecuperacion = (codigo, expiracion) => {
-    const contenido = `
+  const contenido = `
         <div class="container">
             <div class="header">
                 <h1>Recuperación de Contraseña</h1>
@@ -157,11 +157,11 @@ export const plantillaCodigoRecuperacion = (codigo, expiracion) => {
             </div>
         </div>
     `;
-    return plantillaBase(contenido);
+  return plantillaBase(contenido);
 };
 
 export const plantillaCuentaCreada = (correo, contrasena, permiso) => {
-    const contenido = `
+  const contenido = `
         <div class="container">
             <div class="header">
                 <h1>¡Bienvenido al Sistema!</h1>
@@ -199,18 +199,18 @@ export const plantillaCuentaCreada = (correo, contrasena, permiso) => {
                 </div>
 
                 <div style="text-align: center;">
-                    <a href="${process.env.APP_URL || "#"}" class="button">Iniciar Sesión</a>
+                    <a href="${process.env.APP_URL || '#'}" class="button">Iniciar Sesión</a>
                 </div>
 
                 <p>Si no esperabas este correo, contacta inmediatamente al administrador.</p>
             </div>
         </div>
     `;
-    return plantillaBase(contenido);
+  return plantillaBase(contenido);
 };
 
 export const plantillaBienvenidaCliente = (nombre, correo) => {
-    const contenido = `
+  const contenido = `
         <div class="container">
             <div class="header">
                 <h1>¡Bienvenido ${nombre}!</h1>
@@ -234,7 +234,7 @@ export const plantillaBienvenidaCliente = (nombre, correo) => {
                 </div>
 
                 <div style="text-align: center;">
-                    <a href="${process.env.APP_URL || "#"}" class="button">Acceder a mi Cuenta</a>
+                    <a href="${process.env.APP_URL || '#'}" class="button">Acceder a mi Cuenta</a>
                 </div>
 
                 <p>Ahora puedes acceder a todas las funcionalidades del sistema.</p>
@@ -243,11 +243,11 @@ export const plantillaBienvenidaCliente = (nombre, correo) => {
             </div>
         </div>
     `;
-    return plantillaBase(contenido);
+  return plantillaBase(contenido);
 };
 
 export const plantillaContrasenaRestablecida = (correo) => {
-    const contenido = `
+  const contenido = `
         <div class="container">
             <div class="header">
                 <h1>Contraseña Restablecida</h1>
@@ -264,12 +264,12 @@ export const plantillaContrasenaRestablecida = (correo) => {
                     
                     <div class="credential-item">
                         <span class="credential-label">🕐 Fecha y hora:</span><br>
-                        <span class="credential-value">${new Date().toLocaleString("es-HN", { timeZone: "America/Tegucigalpa" })}</span>
+                        <span class="credential-value">${new Date().toLocaleString('es-HN', { timeZone: 'America/Tegucigalpa' })}</span>
                     </div>
                 </div>
 
                 <div style="text-align: center;">
-                    <a href="${process.env.APP_URL || "#"}" class="button">Iniciar Sesión</a>
+                    <a href="${process.env.APP_URL || '#'}" class="button">Iniciar Sesión</a>
                 </div>
 
                 <div class="warning">
@@ -279,11 +279,17 @@ export const plantillaContrasenaRestablecida = (correo) => {
             </div>
         </div>
     `;
-    return plantillaBase(contenido);
+  return plantillaBase(contenido);
 };
 
-export const plantillaInicioSesion = (correo, permiso, dispositivo, ubicacion, fecha) => {
-    const contenido = `
+export const plantillaInicioSesion = (
+  correo,
+  permiso,
+  dispositivo,
+  ubicacion,
+  fecha,
+) => {
+  const contenido = `
         <div class="container">
             <div class="header">
                 <h1>Nuevo Inicio de Sesión</h1>
@@ -337,5 +343,5 @@ export const plantillaInicioSesion = (correo, permiso, dispositivo, ubicacion, f
             </div>
         </div>
     `;
-    return plantillaBase(contenido);
+  return plantillaBase(contenido);
 };

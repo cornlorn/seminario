@@ -1,8 +1,11 @@
 # Node
 node_modules
 
-# Environment
+# Variables de entorno
 .env
 
-# System files
+# Archivos del sistema
 .DS_Store
+
+# Archivos públicos
+public
