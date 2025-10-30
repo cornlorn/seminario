@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import { registrar } from '../controladores/auth/registrar.controlador.mjs';
+import { validar } from '../middlewares/validacion.middleware.mjs';
+import { validarRegistro } from '../validaciones/registrar.validacion.mjs';
 
 const router = Router();
 
@@ -8,7 +10,6 @@ const router = Router();
  * /usuarios/registrar:
  *   post:
  *     summary: Registra un nuevo usuario y crea su jugador y billetera asociada
- *     description: Crea un registro en las tablas `usuarios`, `jugadores` y `billeteras` dentro de una transacción.
  *     tags:
  *       - Usuarios
  *     requestBody:
@@ -49,35 +50,29 @@ const router = Router();
  *     responses:
  *       201:
  *         description: Cliente registrado exitosamente
+ *       400:
+ *         description: Error de validación en los datos enviados
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 mensaje:
- *                   type: string
- *                   example: Cliente registrado exitosamente
+ *                 errores:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       campo:
+ *                         type: string
+ *                         example: correo
+ *                       mensaje:
+ *                         type: string
+ *                         example: El correo debe tener un formato válido
  *       409:
  *         description: El correo ya está registrado
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 mensaje:
- *                   type: string
- *                   example: El correo electrónico ya está registrado
  *       500:
  *         description: Error interno del servidor
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 mensaje:
- *                   type: string
- *                   example: Error interno del servidor
  */
-router.post('/registrar', registrar);
+router.post('/registrar', validarRegistro, validar, registrar);
 
 export { router as rutasUsuarios };
