@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
-import { sequelize } from '../configuraciones/database.mjs';
-import { Administrador } from '../modelos/administrador.modelo.mjs';
-import { Usuario } from '../modelos/usuario.modelo.mjs';
+import { sequelize } from '../config/database.config.mjs';
+import { Administrador } from '../modelos/index.mjs';
+import { Usuario } from '../modelos/index.mjs';
 
 const { ADMIN_USER, ADMIN_PASS, ADMIN_NAME, ADMIN_SURNAME } = process.env;
 

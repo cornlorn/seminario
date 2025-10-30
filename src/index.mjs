@@ -3,8 +3,8 @@ import express from 'express';
 import morgan from 'morgan';
 import swaggerUI from 'swagger-ui-express';
 import { specs } from '../swagger.mjs';
-import { transportador } from './configuraciones/correo.mjs';
-import { sequelize } from './configuraciones/database.mjs';
+import { sequelize } from './config/database.config.mjs';
+import { transportador } from './config/email.config.mjs';
 import { rutas } from './rutas/index.mjs';
 import { administrador } from './utils/administrador.mjs';
 
@@ -18,6 +18,7 @@ app.use(morgan('dev'));
 
 app.use('/api', rutas);
 app.use('/api/docs', swaggerUI.serve, swaggerUI.setup(specs));
+app.use('/public', express.static('public'));
 
 try {
   await sequelize.authenticate();

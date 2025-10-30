@@ -1,8 +1,8 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../config/database.config.mjs';
 
-export const Administrador = sequelize.define(
-  'Administrador',
+export const Jugador = sequelize.define(
+  'Jugador',
   {
     id: { type: DataTypes.STRING, primaryKey: true },
     usuario: {
@@ -15,9 +15,12 @@ export const Administrador = sequelize.define(
     },
     nombre: { type: DataTypes.STRING, allowNull: false },
     apellido: { type: DataTypes.STRING, allowNull: false },
+    telefono: { type: DataTypes.STRING, allowNull: false },
+    nacimiento: { type: DataTypes.DATEONLY, allowNull: false },
+    avatar: { type: DataTypes.STRING, allowNull: true },
   },
   {
-    tableName: 'administradores',
+    tableName: 'jugadores',
     timestamps: true,
     createdAt: 'creado',
     updatedAt: 'actualizado',
