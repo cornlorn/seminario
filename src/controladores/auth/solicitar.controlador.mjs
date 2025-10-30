@@ -12,14 +12,10 @@ export const solicitar = async (request, response) => {
     const usuario = await Usuario.findOne({ where: { correo } });
 
     if (!usuario) {
-      return response.send({
-        mensaje: 'Si el correo existe, recibirás un código de recuperación',
-      });
+      return response.send({ mensaje: 'Si el correo existe, recibirás un código de recuperación' });
     }
 
-    const codigo =
-      crypto.getRandomValues(new Uint32Array(1))[0] %
-      (1e6).toString().padStart(6, '0');
+    const codigo = crypto.getRandomValues(new Uint32Array(1))[0] % (1e6).toString().padStart(6, '0');
 
     const expiracion = new Date();
     expiracion.setMinutes(expiracion.getMinutes() + 15);
@@ -32,9 +28,7 @@ export const solicitar = async (request, response) => {
       expira: expiracion,
     });
 
-    response.json({
-      mensaje: 'Si el correo existe, recibirás un código de recuperación',
-    });
+    response.json({ mensaje: 'Si el correo existe, recibirás un código de recuperación' });
   } catch (error) {
     console.error('Error: No se pudo procesar la solicitud de recuperación');
     console.error(error);

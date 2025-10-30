@@ -8,20 +8,10 @@ const opciones = {
     info: {
       title: 'API REST de lotería',
       version: '1.0.0',
-      description:
-        'API para gestionar usuarios, juegos y compras en la aplicación de lotería',
+      description: 'API para gestionar usuarios, juegos y compras en la aplicación de lotería',
     },
-    servers: [
-      {
-        url: `http://localhost:${PORT}/api`,
-        description: 'Servidor de desarrollo',
-      },
-    ],
-    components: {
-      securitySchemes: {
-        bearerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
-      },
-    },
+    servers: [{ url: `http://localhost:${PORT}/api`, description: 'Servidor de desarrollo' }],
+    components: { securitySchemes: { bearerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' } } },
     security: [{ bearerAuth: [] }],
   },
   apis: ['src/rutas/**/*.mjs'],

@@ -27,9 +27,7 @@ try {
   await transportador.verify();
   app.listen(PORT, () => {
     console.log(`Servidor ejecutándose en: http://localhost:${PORT}`);
-    console.log(
-      `Documentación disponible en: http://localhost:${PORT}/api/docs`,
-    );
+    console.log(`Documentación disponible en: http://localhost:${PORT}/api/docs`);
   });
 } catch (error) {
   console.error('Error: No se pudo iniciar el servidor');

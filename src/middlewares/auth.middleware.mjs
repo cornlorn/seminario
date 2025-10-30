@@ -9,9 +9,7 @@ export const autenticar = async (request, response, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const usuario = await Usuario.findByPk(decoded.id, {
-      attributes: { exclude: ['password'] },
-    });
+    const usuario = await Usuario.findByPk(decoded.id, { attributes: { exclude: ['password'] } });
 
     if (!usuario) {
       return response.status(401).json({ error: 'Usuario no encontrado' });
@@ -21,11 +19,7 @@ export const autenticar = async (request, response, next) => {
       return response.status(403).json({ error: 'Usuario inactivo' });
     }
 
-    request.usuario = {
-      id: usuario.id,
-      correo: usuario.correo,
-      rol: usuario.rol,
-    };
+    request.usuario = { id: usuario.id, correo: usuario.correo, rol: usuario.rol };
 
     return next();
   } catch (error) {

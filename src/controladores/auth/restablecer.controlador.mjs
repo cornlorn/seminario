@@ -12,24 +12,16 @@ export const restablecer = async (request, response) => {
 
   try {
     const token = await Token.findOne({
-      where: {
-        codigo: codigo,
-        tipo: 'Recuperacion',
-        expira: { [Op.gt]: new Date() },
-      },
+      where: { codigo: codigo, tipo: 'Recuperacion', expira: { [Op.gt]: new Date() } },
     });
 
     if (!token) {
-      return response
-        .status(400)
-        .json({ mensaje: 'Código de recuperación inválido o expirado' });
+      return response.status(400).json({ mensaje: 'Código de recuperación inválido o expirado' });
     }
 
     const usuario = await Usuario.findByPk(token.usuario);
     if (!usuario) {
-      return response
-        .status(400)
-        .json({ mensaje: 'Usuario asociado no encontrado' });
+      return response.status(400).json({ mensaje: 'Usuario asociado no encontrado' });
     }
 
     usuario.contrasena = await bcrypt.hash(contrasena, 10);
@@ -37,15 +29,11 @@ export const restablecer = async (request, response) => {
 
     await token.destroy().catch(() => {});
 
-    await Token.destroy({
-      where: { usuario: usuario.id, tipo: 'Recuperacion' },
-    }).catch(() => {});
+    await Token.destroy({ where: { usuario: usuario.id, tipo: 'Recuperacion' } }).catch(() => {});
 
     return response.json({ mensaje: 'Contraseña restablecida exitosamente' });
   } catch (error) {
-    console.error(
-      'Error: No se pudo procesar la solicitud de restablecimiento de contraseña',
-    );
+    console.error('Error: No se pudo procesar la solicitud de restablecimiento de contraseña');
     console.error(error);
     return response.status(500).json({ mensaje: 'Error interno del servidor' });
   }

@@ -6,11 +6,7 @@ export const validar = (request, response, next) => {
   if (!errores.isEmpty()) {
     return response
       .status(400)
-      .json({
-        errores: errores
-          .array()
-          .map((err) => ({ campo: err.path, mensaje: err.msg })),
-      });
+      .json({ errores: errores.array().map((err) => ({ campo: err.path, mensaje: err.msg })) });
   }
 
   next();

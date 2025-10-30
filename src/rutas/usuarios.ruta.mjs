@@ -3,6 +3,10 @@ import { ingresar } from '../controladores/auth/ingresar.controlador.mjs';
 import { registrar } from '../controladores/auth/registrar.controlador.mjs';
 import { restablecer } from '../controladores/auth/restablecer.controlador.mjs';
 import { solicitar } from '../controladores/auth/solicitar.controlador.mjs';
+import { actualizar } from '../controladores/avatar/actualizar.controlador.mjs';
+import { eliminar } from '../controladores/avatar/eliminar.controller.mjs';
+import { autenticar } from '../middlewares/auth.middleware.mjs';
+import { manejarErroresMulter, subirAvatar } from '../middlewares/multer.middleware.mjs';
 import { validar } from '../middlewares/validacion.middleware.mjs';
 import { validarIngreso } from '../validaciones/ingresar.validacion.mjs';
 import { validarRegistro } from '../validaciones/registrar.validacion.mjs';
@@ -42,16 +46,16 @@ const router = Router();
  *               contrasena:
  *                 type: string
  *                 format: password
- *                 example: MiClaveSegura123
+ *                 example: Contasena2025
  *               nombre:
  *                 type: string
- *                 example: Pablo
+ *                 example: Andrea
  *               apellido:
  *                 type: string
  *                 example: Martínez
  *               telefono:
  *                 type: string
- *                 example: "+50498765432"
+ *                 example: "98765432"
  *               nacimiento:
  *                 type: string
  *                 format: date
@@ -95,7 +99,7 @@ router.post('/registrar', validarRegistro, validar, registrar);
  *               contrasena:
  *                 type: string
  *                 format: password
- *                 example: MiClaveSegura123
+ *                 example: Contasena2025
  *     responses:
  *       200:
  *         description: Inicio de sesión exitoso, devuelve un token JWT
@@ -186,7 +190,7 @@ router.post('/solicitar', validarSolicitud, validar, solicitar);
  *               contrasena:
  *                 type: string
  *                 format: password
- *                 example: NuevaClaveSegura123
+ *                 example: Contrasena2026
  *     responses:
  *       200:
  *         description: Contraseña restablecida exitosamente
@@ -220,5 +224,82 @@ router.post('/solicitar', validarSolicitud, validar, solicitar);
  *                   example: Error interno del servidor
  */
 router.post('/restablecer', validarRestablecer, validar, restablecer);
+
+/**
+ * @swagger
+ * /usuarios/avatar:
+ *   put:
+ *     summary: Actualiza el avatar del usuario autenticado
+ *     description: Permite al usuario subir o actualizar su foto de perfil. Solo se permiten archivos JPG, JPEG y PNG con un tamaño máximo de 1MB.
+ *     tags:
+ *       - Avatar
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - avatar
+ *             properties:
+ *               avatar:
+ *                 type: string
+ *                 format: binary
+ *                 description: Archivo de imagen (JPG, JPEG, PNG - máx. 1MB)
+ *     responses:
+ *       200:
+ *         description: Avatar actualizado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Avatar subido exitosamente
+ *                 avatar:
+ *                   type: object
+ *                   properties:
+ *                     url:
+ *                       type: string
+ *                       example: /usuarios/abc-123/avatar-1234567890.jpg
+ *                     filename:
+ *                       type: string
+ *                       example: avatar-1234567890.jpg
+ *                     size:
+ *                       type: number
+ *                       example: 524288
+ *       400:
+ *         description: Error en el archivo (tamaño, formato o no proporcionado)
+ *       401:
+ *         description: Token no proporcionado o inválido
+ *       500:
+ *         description: Error al guardar el avatar
+ */
+router.put('/avatar', autenticar, subirAvatar, manejarErroresMulter, actualizar);
+
+/**
+ * @swagger
+ * /usuarios/avatar:
+ *   delete:
+ *     summary: Elimina el avatar del usuario autenticado
+ *     description: Elimina la foto de perfil actual del usuario
+ *     tags:
+ *       - Avatar
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Avatar eliminado exitosamente
+ *       401:
+ *         description: Token no proporcionado o inválido
+ *       404:
+ *         description: No hay avatar para eliminar
+ *       500:
+ *         description: Error al eliminar el avatar
+ */
+router.delete('/avatar', autenticar, eliminar);
 
 export { router as rutasUsuarios };

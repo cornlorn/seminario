@@ -12,17 +12,9 @@ export const Token = sequelize.define(
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
     },
-    tipo: {
-      type: DataTypes.ENUM('Confirmacion', 'Recuperacion'),
-      allowNull: false,
-    },
+    tipo: { type: DataTypes.ENUM('Confirmacion', 'Recuperacion'), allowNull: false },
     codigo: { type: DataTypes.STRING, allowNull: false },
     expira: { type: DataTypes.DATE, allowNull: false },
   },
-  {
-    tableName: 'tokens',
-    timestamps: true,
-    createdAt: 'creado',
-    updatedAt: 'actualizado',
-  },
+  { tableName: 'tokens', timestamps: true, createdAt: 'creado', updatedAt: 'actualizado' },
 );

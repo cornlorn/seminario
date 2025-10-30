@@ -16,23 +16,16 @@ export const ingresar = async (request, response) => {
       return response.status(401).json({ mensaje: 'Credenciales inválidas' });
     }
 
-    const contrasenaValida = await bcrypt.compare(
-      contrasena,
-      usuario.contrasena,
-    );
+    const contrasenaValida = await bcrypt.compare(contrasena, usuario.contrasena);
     if (!contrasenaValida) {
       return response.status(401).json({ mensaje: 'Credenciales inválidas' });
     }
 
-    const token = jwt.sign(
-      { id: usuario.id, correo: usuario.correo, rol: usuario.rol },
-      process.env.JWT_SECRET,
-      { expiresIn: '24h' },
-    );
+    const token = jwt.sign({ id: usuario.id, correo: usuario.correo, rol: usuario.rol }, process.env.JWT_SECRET, {
+      expiresIn: '24h',
+    });
 
-    response
-      .status(200)
-      .json({ mensaje: 'Inicio de sesión exitoso', token: token });
+    response.status(200).json({ mensaje: 'Inicio de sesión exitoso', token: token });
   } catch (error) {
     console.error('Error: No se pudo iniciar sesión');
     console.error(error.message);

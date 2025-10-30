@@ -282,13 +282,7 @@ export const plantillaContrasenaRestablecida = (correo) => {
   return plantillaBase(contenido);
 };
 
-export const plantillaInicioSesion = (
-  correo,
-  permiso,
-  dispositivo,
-  ubicacion,
-  fecha,
-) => {
+export const plantillaInicioSesion = (correo, permiso, dispositivo, ubicacion, fecha) => {
   const contenido = `
         <div class="container">
             <div class="header">

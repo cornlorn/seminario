@@ -8,28 +8,18 @@ import { Jugador } from '../../modelos/index.mjs';
  */
 export const eliminar = async (request, response) => {
   try {
-    const directorio = path.join(
-      process.cwd(),
-      'public',
-      'usuarios',
-      request.usuario.id.toString(),
-    );
+    const directorio = path.join(process.cwd(), 'public', 'usuarios', request.usuario.id.toString());
 
     const archivos = await fs.readdir(directorio).catch(() => []);
     const avatar = archivos.find((file) => file.startsWith('avatar'));
 
     if (!avatar) {
-      return response
-        .status(404)
-        .json({ error: 'No hay avatar para eliminar' });
+      return response.status(404).json({ error: 'No hay avatar para eliminar' });
     }
 
     await fs.unlink(path.join(directorio, avatar));
 
-    await Jugador.update(
-      { avatar: null },
-      { where: { usuario: request.usuario.id } },
-    );
+    await Jugador.update({ avatar: null }, { where: { usuario: request.usuario.id } });
 
     response.status(200).json({ mensaje: 'Avatar eliminado exitosamente' });
   } catch (error) {

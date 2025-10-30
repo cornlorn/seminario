@@ -19,14 +19,7 @@ const almacenamiento = multer.diskStorage({
         return callback(new Error('Usuario no autenticado'), null);
       }
 
-      const directorio = path.join(
-        __dirname,
-        '..',
-        '..',
-        'public',
-        'usuarios',
-        usuario.id.toString(),
-      );
+      const directorio = path.join(__dirname, '..', '..', 'public', 'usuarios', usuario.id.toString());
 
       await fs.mkdir(directorio, { recursive: true });
       callback(null, directorio);
@@ -37,14 +30,7 @@ const almacenamiento = multer.diskStorage({
   filename: async (request, file, callback) => {
     try {
       const usuario = request.usuario;
-      const directorio = path.join(
-        __dirname,
-        '..',
-        '..',
-        'public',
-        'usuarios',
-        usuario.id.toString(),
-      );
+      const directorio = path.join(__dirname, '..', '..', 'public', 'usuarios', usuario.id.toString());
 
       const archivos = await fs.readdir(directorio).catch(() => []);
       const avatarAntiguo = archivos.find((file) => file.startsWith('avatar'));
@@ -66,10 +52,7 @@ const almacenamiento = multer.diskStorage({
 const filtro = (request, file, callback) => {
   const extension = path.extname(file.originalname).toLowerCase();
 
-  if (
-    MIMETYPES_PERMITIDOS.includes(file.mimetype) &&
-    EXTENSIONES_PERMITIDAS.includes(extension)
-  ) {
+  if (MIMETYPES_PERMITIDOS.includes(file.mimetype) && EXTENSIONES_PERMITIDAS.includes(extension)) {
     callback(null, true);
   } else {
     callback(new Error('Solo se permiten archivos JPG, JPEG, PNG'), false);

@@ -19,10 +19,5 @@ export const Jugador = sequelize.define(
     nacimiento: { type: DataTypes.DATEONLY, allowNull: false },
     avatar: { type: DataTypes.STRING, allowNull: true },
   },
-  {
-    tableName: 'jugadores',
-    timestamps: true,
-    createdAt: 'creado',
-    updatedAt: 'actualizado',
-  },
+  { tableName: 'jugadores', timestamps: true, createdAt: 'creado', updatedAt: 'actualizado' },
 );

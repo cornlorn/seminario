@@ -15,10 +15,5 @@ export const Billetera = sequelize.define(
     },
     saldo: { type: DataTypes.DECIMAL(10, 2), allowNull: false },
   },
-  {
-    tableName: 'billeteras',
-    timestamps: true,
-    createdAt: 'creado',
-    updatedAt: 'actualizado',
-  },
+  { tableName: 'billeteras', timestamps: true, createdAt: 'creado', updatedAt: 'actualizado' },
 );

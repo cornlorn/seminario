@@ -35,70 +35,41 @@ const generarContrasena = () => {
  * @param {import("express").Response} response
  */
 export const crearUsuario = async (request, response) => {
-  const {
-    correo,
-    permiso,
-    nombre,
-    apellido,
-    identidad,
-    telefono,
-    departamento,
-    municipio,
-  } = request.body;
+  const { correo, permiso, nombre, apellido, identidad, telefono, departamento, municipio } = request.body;
 
   const transaction = await sequelize.transaction();
 
   try {
-    const usuarioExistente = await Usuario.findOne({
-      where: { correo },
-      transaction,
-    });
+    const usuarioExistente = await Usuario.findOne({ where: { correo }, transaction });
 
     if (usuarioExistente) {
       await transaction.rollback();
-      return response
-        .status(409)
-        .json({ mensaje: 'El correo electrónico ya está registrado' });
+      return response.status(409).json({ mensaje: 'El correo electrónico ya está registrado' });
     }
 
     if (permiso === 'Cliente') {
       if (!identidad) {
         await transaction.rollback();
-        return response
-          .status(400)
-          .json({
-            mensaje: 'El número de identidad es requerido para clientes',
-          });
+        return response.status(400).json({ mensaje: 'El número de identidad es requerido para clientes' });
       }
 
       if (!telefono) {
         await transaction.rollback();
-        return response
-          .status(400)
-          .json({ mensaje: 'El teléfono es requerido para clientes' });
+        return response.status(400).json({ mensaje: 'El teléfono es requerido para clientes' });
       }
 
-      const identidadExistente = await Cliente.findOne({
-        where: { identidad },
-        transaction,
-      });
+      const identidadExistente = await Cliente.findOne({ where: { identidad }, transaction });
 
       if (identidadExistente) {
         await transaction.rollback();
-        return response
-          .status(409)
-          .json({ mensaje: 'El número de identidad ya está registrado' });
+        return response.status(409).json({ mensaje: 'El número de identidad ya está registrado' });
       }
 
       if (departamento) {
-        const departamentoExiste = await Departamento.findByPk(departamento, {
-          transaction,
-        });
+        const departamentoExiste = await Departamento.findByPk(departamento, { transaction });
         if (!departamentoExiste) {
           await transaction.rollback();
-          return response
-            .status(400)
-            .json({ mensaje: 'El departamento seleccionado no es válido' });
+          return response.status(400).json({ mensaje: 'El departamento seleccionado no es válido' });
         }
       }
 
@@ -112,10 +83,7 @@ export const crearUsuario = async (request, response) => {
           await transaction.rollback();
           return response
             .status(400)
-            .json({
-              mensaje:
-                'El municipio seleccionado no es válido o no pertenece al departamento',
-            });
+            .json({ mensaje: 'El municipio seleccionado no es válido o no pertenece al departamento' });
         }
       }
     }
@@ -123,19 +91,11 @@ export const crearUsuario = async (request, response) => {
     const contrasenaGenerada = generarContrasena();
     const contrasenaEncriptada = await bcrypt.hash(contrasenaGenerada, 10);
 
-    const usuarioNuevo = await Usuario.create(
-      { correo, contrasena: contrasenaEncriptada, permiso },
-      { transaction },
-    );
+    const usuarioNuevo = await Usuario.create({ correo, contrasena: contrasenaEncriptada, permiso }, { transaction });
 
     const respuesta = {
       mensaje: `Usuario ${permiso.toLowerCase()} creado exitosamente`,
-      usuario: {
-        id: usuarioNuevo.id,
-        correo: usuarioNuevo.correo,
-        permiso: usuarioNuevo.permiso,
-        contrasenaGenerada,
-      },
+      usuario: { id: usuarioNuevo.id, correo: usuarioNuevo.correo, permiso: usuarioNuevo.permiso, contrasenaGenerada },
     };
 
     if (permiso === 'Cliente') {
@@ -152,10 +112,7 @@ export const crearUsuario = async (request, response) => {
         { transaction },
       );
 
-      const billeteraNueva = await Billetera.create(
-        { usuario: usuarioNuevo.id, saldo: 0.0 },
-        { transaction },
-      );
+      const billeteraNueva = await Billetera.create({ usuario: usuarioNuevo.id, saldo: 0.0 }, { transaction });
 
       respuesta.cliente = {
         id: clienteNuevo.id,
@@ -186,8 +143,6 @@ export const crearUsuario = async (request, response) => {
     console.error('Error al crear usuario:');
     console.error(error);
 
-    response
-      .status(500)
-      .json({ mensaje: 'Error interno del servidor al crear el usuario' });
+    response.status(500).json({ mensaje: 'Error interno del servidor al crear el usuario' });
   }
 };

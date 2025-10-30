@@ -14,9 +14,7 @@ export const registrar = async (request, response) => {
     const usuarioExistente = await Usuario.findOne({ where: { correo } });
 
     if (usuarioExistente) {
-      return response
-        .status(409)
-        .json({ mensaje: 'El correo electrónico ya está registrado' });
+      return response.status(409).json({ mensaje: 'El correo electrónico ya está registrado' });
     }
 
     await sequelize.transaction(async (transaccion) => {
@@ -24,12 +22,7 @@ export const registrar = async (request, response) => {
       const jugadorUUID = crypto.randomUUID();
 
       await Usuario.create(
-        {
-          id: usuarioUUID,
-          correo: correo,
-          contrasena: await bcrypt.hash(contrasena, 10),
-          rol: 'Jugador',
-        },
+        { id: usuarioUUID, correo: correo, contrasena: await bcrypt.hash(contrasena, 10), rol: 'Jugador' },
         { transaction: transaccion },
       );
 

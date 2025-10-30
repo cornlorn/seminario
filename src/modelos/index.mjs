@@ -5,10 +5,7 @@ import { Token } from './token.modelo.mjs';
 import { Usuario } from './usuario.modelo.mjs';
 
 Usuario.hasOne(Administrador, { foreignKey: 'usuario', as: 'administrador' });
-Administrador.belongsTo(Usuario, {
-  foreignKey: 'usuario',
-  as: 'usuarioDetalles',
-});
+Administrador.belongsTo(Usuario, { foreignKey: 'usuario', as: 'usuarioDetalles' });
 
 Usuario.hasMany(Token, { foreignKey: 'usuario', as: 'tokens' });
 Token.belongsTo(Usuario, { foreignKey: 'usuario', as: 'usuarioDetalles' });

@@ -16,10 +16,5 @@ export const Administrador = sequelize.define(
     nombre: { type: DataTypes.STRING, allowNull: false },
     apellido: { type: DataTypes.STRING, allowNull: false },
   },
-  {
-    tableName: 'administradores',
-    timestamps: true,
-    createdAt: 'creado',
-    updatedAt: 'actualizado',
-  },
+  { tableName: 'administradores', timestamps: true, createdAt: 'creado', updatedAt: 'actualizado' },
 );
