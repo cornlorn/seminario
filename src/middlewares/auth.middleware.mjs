@@ -39,3 +39,10 @@ export const autenticar = async (request, response, next) => {
     return response.status(500).json({ error: 'Error interno del servidor' });
   }
 };
+
+export const verificarAdministrador = (request, response, next) => {
+  if (request.usuario.rol !== 'Administrador') {
+    return response.status(403).json({ error: 'Acceso denegado' });
+  }
+  return next();
+};
