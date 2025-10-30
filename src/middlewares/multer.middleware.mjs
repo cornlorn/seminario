@@ -1,7 +1,7 @@
 import multer from 'multer';
 import { upload } from '../config/multer.config.mjs';
 
-export const subirAvatar = upload.single('imagen');
+export const subirAvatar = upload.single('avatar');
 
 export const manejarErroresMulter = (error, request, response, next) => {
   if (error instanceof multer.MulterError) {
