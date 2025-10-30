@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { cambiar } from '../controladores/avatar/cambiar.controller.mjs';
+import { rutasUsuarios } from './usuarios.ruta.mjs';
 
 const router = Router();
 
-router.post('/avatar', cambiar);
+router.use('/usuarios', rutasUsuarios);
 
 export { router as rutas };

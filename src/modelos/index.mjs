@@ -1,14 +1,18 @@
 import { Administrador } from './administrador.modelo.mjs';
+import { Billetera } from './billetera.modelo.mjs';
 import { Jugador } from './jugador.modelo.mjs';
 import { Usuario } from './usuario.modelo.mjs';
 
 Usuario.hasOne(Administrador, { foreignKey: 'usuario', as: 'administrador' });
 Administrador.belongsTo(Usuario, {
   foreignKey: 'usuario',
-  as: 'usuarioDetails',
+  as: 'usuarioDetalles',
 });
 
 Usuario.hasOne(Jugador, { foreignKey: 'usuario', as: 'jugador' });
-Jugador.belongsTo(Usuario, { foreignKey: 'usuario', as: 'usuarioDetails' });
+Jugador.belongsTo(Usuario, { foreignKey: 'usuario', as: 'usuarioDetalles' });
 
-export { Administrador, Jugador, Usuario };
+Jugador.hasOne(Billetera, { foreignKey: 'jugador', as: 'billetera' });
+Billetera.belongsTo(Jugador, { foreignKey: 'jugador', as: 'jugadorDetalles' });
+
+export { Administrador, Billetera, Jugador, Usuario };

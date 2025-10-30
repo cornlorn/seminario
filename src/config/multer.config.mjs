@@ -55,7 +55,7 @@ const almacenamiento = multer.diskStorage({
 
       const extension = path.extname(file.originalname).toLowerCase();
       const timestamp = Date.now();
-      
+
       callback(null, `avatar-${timestamp}${extension}`);
     } catch (error) {
       callback(error, null);
