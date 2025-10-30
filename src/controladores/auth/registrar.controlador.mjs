@@ -51,9 +51,9 @@ export const registrar = async (request, response) => {
       );
     });
 
-    response.status(201).json({ mensaje: 'Cliente registrado exitosamente' });
+    response.status(201).json({ mensaje: 'Jugador registrado exitosamente' });
   } catch (error) {
-    console.error('Error: No se pudo registrar el cliente');
+    console.error('Error: No se pudo registrar al jugador');
     console.error(error.message);
     response.status(500).json({ mensaje: 'Error interno del servidor' });
   }
