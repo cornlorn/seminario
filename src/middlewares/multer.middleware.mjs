@@ -8,7 +8,7 @@ export const manejarErroresMulter = (error, request, response, next) => {
     if (error.code === 'LIMIT_FILE_SIZE') {
       return response
         .status(400)
-        .json({ error: 'El archivo es demasiado grande. Tamaño máximo: 5MB' });
+        .json({ error: 'El archivo es demasiado grande. Tamaño máximo: 1MB' });
     }
     if (error.code === 'LIMIT_FILE_COUNT') {
       return response
