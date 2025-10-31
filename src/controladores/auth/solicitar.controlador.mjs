@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
-import { Token, Usuario } from '../../modelos/index.mjs';
-import { correoRecuperacion } from '../../servicios/email.servicio.mjs';
+import { Jugador, Token, Usuario } from '../../modelos/index.mjs';
+import { correoSolicitud } from '../../servicios/correo/solicitud.mjs';
 
 /**
  * @param {import("express").Request} request
@@ -11,13 +11,12 @@ export const solicitar = async (request, response) => {
 
   try {
     const usuario = await Usuario.findOne({ where: { correo } });
-
     if (!usuario) {
       return response.send({ mensaje: 'Si el correo existe, recibirás un código de recuperación' });
     }
 
     const codigo = crypto.getRandomValues(new Uint32Array(1))[0].toString().padStart(6, '0').slice(0, 6);
-    
+
     const expiracion = new Date();
     expiracion.setMinutes(expiracion.getMinutes() + 15);
 
@@ -29,10 +28,7 @@ export const solicitar = async (request, response) => {
       expira: expiracion,
     });
 
-    await correoRecuperacion(correo, codigo).catch((error) => {
-      console.error('Error: No se pudo enviar el correo de recuperación');
-      console.error(error);
-    });
+    await correoSolicitud(correo, codigo);
 
     response.json({ mensaje: 'Si el correo existe, recibirás un código de recuperación' });
   } catch (error) {

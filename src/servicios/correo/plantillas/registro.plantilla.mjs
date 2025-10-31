@@ -1,13 +1,24 @@
-export const base = (contenido) => {
+export const plantillaRegistro = (nombre) => {
+  const escapeHtml = (text) => {
+    const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+    return text.replace(/[&<>"']/g, (m) => map[m]);
+  };
+
+  const nombreSeguro = escapeHtml(nombre);
+
   return `
   <!DOCTYPE html>
   <html lang="es">
     <head>
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+      <title>Bienvenido a ${process.env.APP_NAME}</title>
+      <link
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&display=swap"
+        rel="stylesheet"
+      />
       <style>
-        @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600;700&display=swap");
-  
         * {
           margin: 0;
           padding: 0;
@@ -41,13 +52,14 @@ export const base = (contenido) => {
           font-weight: 700;
           color: #ffffff;
           letter-spacing: -0.5px;
+          margin: 0;
         }
   
         .content {
           padding: 50px 40px;
         }
   
-        h1 {
+        h2 {
           font-size: 28px;
           color: #1a1a1a;
           margin-bottom: 20px;
@@ -95,30 +107,10 @@ export const base = (contenido) => {
           margin-bottom: 10px;
         }
   
-        .social-links {
-          margin: 20px 0 10px;
-        }
-  
-        .social-links a {
-          display: inline-block;
-          margin: 0 8px;
-          color: #999999;
-          text-decoration: none;
-          font-size: 14px;
-        }
-  
-        .social-links a:hover {
-          color: #ff6b35;
-        }
-  
-        .unsubscribe {
-          color: #999999;
-          font-size: 12px;
-          text-decoration: none;
-        }
-  
-        .unsubscribe:hover {
-          text-decoration: underline;
+        .divider {
+          height: 1px;
+          background-color: #e5e5e5;
+          margin: 20px 0;
         }
   
         @media only screen and (max-width: 600px) {
@@ -132,12 +124,12 @@ export const base = (contenido) => {
             padding: 30px 25px;
           }
   
-          h1 {
-            font-size: 24px;
-          }
-  
           .logo {
             font-size: 28px;
+          }
+  
+          .info-box {
+            padding: 20px;
           }
         }
       </style>
@@ -145,19 +137,53 @@ export const base = (contenido) => {
     <body>
       <div class="email-container">
         <div class="header">
-          <div class="logo">${process.env.APP_NAME}</div>
+          <h1 class="logo">${process.env.APP_NAME}</h1>
         </div>
   
-        <div class="content">${contenido}</div>
+        <div class="content">
+          <p>Hola ${nombreSeguro},</p>
+  
+          <p>
+            Estamos emocionados de que te unas a nuestra comunidad de jugadores.
+            Tu suerte comienza aquí, y estamos listos para acompañarte en cada
+            sorteo.
+          </p>
+  
+          <div class="info-box">
+            <ul>
+              <li>Acceso a múltiples juegos de lotería</li>
+              <li>Notificaciones de resultados y premios</li>
+              <li>Elige tus números de la suerte</li>
+              <li>Historial completo de tus resultados</li>
+            </ul>
+          </div>
+  
+          <p>
+            ¿Listo para probar tu suerte? Comienza eligiendo tu primera lotería y
+            selecciona tus números ganadores. Recuerda, cada sorteo es una nueva
+            oportunidad.
+          </p>
+  
+          <p>
+            Si tienes alguna pregunta sobre cómo jugar o necesitas ayuda, nuestro
+            equipo está disponible 24/7.
+          </p>
+  
+          <p style="margin-top: 30px">
+            Saludos,<br /><strong>El equipo de ${process.env.APP_NAME}</strong>
+          </p>
+        </div>
   
         <div class="footer">
-          <p>© ${new Date().getFullYear()} ${process.env.APP_NAME}. Todos los derechos reservados.</p>
+          <p>© 2025 ${process.env.APP_NAME}. Todos los derechos reservados.</p>
+          <div class="divider"></div>
           <p>
-            Juega responsablemente. ${process.env.APP_NAME} es una plataforma de entretenimiento.
+            Este es un correo automático de seguridad. Por favor no respondas a
+            este mensaje.
           </p>
         </div>
       </div>
     </body>
   </html>
-  `;
+`;
 };

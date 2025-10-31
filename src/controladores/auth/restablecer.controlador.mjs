@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 import { Op } from 'sequelize';
 import { Token } from '../../modelos/index.mjs';
 import { Usuario } from '../../modelos/index.mjs';
+import { correoRestablecimiento } from '../../servicios/correo/restablecimiento.mjs';
 
 /**
  * @param {import("express").Request} request
@@ -30,6 +31,8 @@ export const restablecer = async (request, response) => {
     await token.destroy().catch(() => {});
 
     await Token.destroy({ where: { usuario: usuario.id, tipo: 'Recuperacion' } }).catch(() => {});
+
+    await correoRestablecimiento(usuario.correo);
 
     return response.json({ mensaje: 'Contraseña restablecida exitosamente' });
   } catch (error) {
