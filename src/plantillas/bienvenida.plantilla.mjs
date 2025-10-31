@@ -2,7 +2,7 @@ import { base } from './index.mjs';
 
 export const plantillaBienvenida = (nombre) => {
   const contenido = `
-  <h1>¡Te damos la bienvenida ${nombre}!</h1>
+  <h1>¡Te damos la bienvenida!</h1>
   <p>Hola ${nombre},</p>
   <p>
     Estamos emocionados de que te unas a nuestra comunidad de jugadores. Tu suerte
@@ -25,7 +25,7 @@ export const plantillaBienvenida = (nombre) => {
     está disponible. ¡Mucha suerte!
   </p>
   <p style="margin-top: 30px">
-    ¡Que la suerte esté de tu lado!<br /><strong>El Equipo de ${process.env.APP_NAME}</strong>
+    ¡Que la suerte esté de tu lado!<br /><strong>El equipo de ${process.env.APP_NAME}</strong>
   </p>
  `;
   return base(contenido);

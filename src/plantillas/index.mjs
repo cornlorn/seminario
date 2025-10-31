@@ -6,7 +6,7 @@ export const base = (contenido) => {
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <style>
-        @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&display=swap");
+        @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600;700&display=swap");
   
         * {
           margin: 0;
@@ -58,22 +58,6 @@ export const base = (contenido) => {
           color: #666666;
           font-size: 16px;
           margin-bottom: 20px;
-        }
-  
-        .cta-button {
-          display: inline-block;
-          margin: 30px 0;
-          padding: 12px 32px;
-          background-color: #ff6b35;
-          color: #ffffff;
-          text-decoration: none;
-          font-weight: 600;
-          font-size: 15px;
-          border: 1px solid #e85a28;
-        }
-  
-        .cta-button:hover {
-          background-color: #e85a28;
         }
   
         .info-box {
