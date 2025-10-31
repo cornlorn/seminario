@@ -54,7 +54,7 @@ EMAIL_PASS=
 PORT=
 
 # Aplicación
-APP_NAME=LOTO
+APP_NAME=
 ```
 
 ---
