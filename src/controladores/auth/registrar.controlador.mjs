@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import { sequelize } from '../../config/database.config.mjs';
 import { Usuario, Jugador, Billetera } from '../../modelos/index.mjs';
+import { correoBienvenida } from '../../servicios/email.servicio.mjs';
 
 /**
  * @param {import("express").Request} request
@@ -42,6 +43,11 @@ export const registrar = async (request, response) => {
         { id: crypto.randomUUID(), jugador: jugadorUUID, saldo: 0.0 },
         { transaction: transaccion },
       );
+    });
+
+    correoBienvenida(correo, nombre).catch((error) => {
+      console.error('Error: No se pudo enviar el correo de bienvenida');
+      console.error(error);
     });
 
     response.status(201).json({ mensaje: 'Jugador registrado exitosamente' });

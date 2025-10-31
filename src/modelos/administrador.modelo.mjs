@@ -14,7 +14,6 @@ export const Administrador = sequelize.define(
       onUpdate: 'CASCADE',
     },
     nombre: { type: DataTypes.STRING, allowNull: false },
-    apellido: { type: DataTypes.STRING, allowNull: false },
   },
   { tableName: 'administradores', timestamps: true, createdAt: 'creado', updatedAt: 'actualizado' },
 );
