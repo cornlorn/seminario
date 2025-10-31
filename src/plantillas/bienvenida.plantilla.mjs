@@ -1,17 +1,16 @@
 import { base } from './index.mjs';
 
-export const plantillaBienvenida = (contenido) => {
-  const content = `
+export const plantillaBienvenida = (nombre) => {
+  const contenido = `
   <h1>¡Te damos la bienvenida ${nombre}!</h1>
   <p>Hola ${nombre},</p>
   <p>
     Estamos emocionados de que te unas a nuestra comunidad de jugadores. Tu suerte
     comienza aquí, y estamos listos para acompañarte en cada sorteo.
   </p>
-  <a href="${urlJuegos}" class="cta-button">Explorar Juegos</a>
   <div class="info-box">
     <ul>
-      <li>Acceso a múltiples loterías nacionales e internacionales</li>
+      <li>Acceso a múltiples juegos de lotería</li>
       <li>Notificaciones instantáneas de resultados y premios</li>
       <li>Números de la suerte personalizados y estadísticas</li>
     </ul>
@@ -23,11 +22,11 @@ export const plantillaBienvenida = (contenido) => {
   </p>
   <p>
     Si tienes alguna pregunta sobre cómo jugar o necesitas ayuda, nuestro equipo
-    está disponible 24/7. ¡Mucha suerte!
+    está disponible. ¡Mucha suerte!
   </p>
   <p style="margin-top: 30px">
-    ¡Que la suerte esté de tu lado!<br /><strong>El Equipo de LottoPlay</strong>
+    ¡Que la suerte esté de tu lado!<br /><strong>El Equipo de ${process.env.APP_NAME}</strong>
   </p>
  `;
-  return base();
+  return base(contenido);
 };

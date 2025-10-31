@@ -161,33 +161,15 @@ export const base = (contenido) => {
     <body>
       <div class="email-container">
         <div class="header">
-          <div class="logo">LottoPlay</div>
+          <div class="logo">${process.env.APP_NAME}</div>
         </div>
   
-        <div class="content">${content}</div>
+        <div class="content">${contenido}</div>
   
         <div class="footer">
-          <p>© 2025 LottoPlay. Todos los derechos reservados.</p>
-          <div class="social-links">
-            <a href="https://twitter.com/lottoplay">Twitter</a>
-            <a href="https://facebook.com/lottoplay">Facebook</a>
-            <a href="https://instagram.com/lottoplay">Instagram</a>
-            <a href="https://linkedin.com/company/lottoplay">LinkedIn</a>
-          </div>
+          <p>© ${new Date().getFullYear()} ${process.env.APP_NAME}. Todos los derechos reservados.</p>
           <p>
-            <a
-              href="https://tudominio.com/cancelar-suscripcion"
-              class="unsubscribe"
-              >Cancelar suscripción</a
-            >
-            |
-            <a href="https://tudominio.com/preferencias" class="unsubscribe"
-              >Preferencias</a
-            >
-          </p>
-          <p>
-            Juega responsablemente. LottoPlay es una plataforma de
-            entretenimiento.
+            Juega responsablemente. ${process.env.APP_NAME} es una plataforma de entretenimiento.
           </p>
         </div>
       </div>
