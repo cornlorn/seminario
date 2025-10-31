@@ -1,6 +1,6 @@
 import { body } from 'express-validator';
 
-export const validarRestablecer = [
+export const validarRestablecimiento = [
   body('codigo')
     .notEmpty()
     .withMessage('El código de recuperación es obligatorio')

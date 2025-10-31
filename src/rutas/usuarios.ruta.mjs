@@ -10,7 +10,7 @@ import { manejarErroresMulter, subirAvatar } from '../middlewares/multer.middlew
 import { validar } from '../middlewares/validacion.middleware.mjs';
 import { validarIngreso } from '../validaciones/ingresar.validacion.mjs';
 import { validarRegistro } from '../validaciones/registrar.validacion.mjs';
-import { validarRestablecer } from '../validaciones/restablecer.validacion.mjs';
+import { validarRestablecimiento } from '../validaciones/restablecer.validacion.mjs';
 import { validarSolicitud } from '../validaciones/solicitar.validacion.mjs';
 
 const router = Router();
@@ -223,7 +223,7 @@ router.post('/solicitar', validarSolicitud, validar, solicitar);
  *                   type: string
  *                   example: Error interno del servidor
  */
-router.post('/restablecer', validarRestablecer, validar, restablecer);
+router.post('/restablecer', validarRestablecimiento, validar, restablecer);
 
 /**
  * @swagger
@@ -303,3 +303,4 @@ router.put('/avatar', autenticar, subirAvatar, manejarErroresMulter, actualizar)
 router.delete('/avatar', autenticar, eliminar);
 
 export { router as rutasUsuarios };
+

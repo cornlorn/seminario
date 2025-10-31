@@ -2,7 +2,7 @@ import { opciones, transportador } from '../../config/correo.config.mjs';
 import { plantillaRegistro } from './plantillas/registro.plantilla.mjs';
 
 export const correoRegistro = async (destinatario, nombre) => {
-  const asunto = `Gracias por registrarte, ${nombre} — empieza a explorar`;
+  const asunto = `Gracias por registrarte, ${nombre}`;
   const plantilla = plantillaRegistro(nombre);
   try {
     await transportador.sendMail(opciones(destinatario, asunto, plantilla));
