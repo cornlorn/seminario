@@ -3,9 +3,9 @@ import { sequelize } from '../config/database.config.mjs';
 import { Administrador } from '../modelos/index.mjs';
 import { Usuario } from '../modelos/index.mjs';
 
-const { ADMIN_USER, ADMIN_PASS, ADMIN_NAME, ADMIN_SURNAME } = process.env;
+const { ADMIN_USER, ADMIN_PASS, ADMIN_NAME } = process.env;
 
-if (!ADMIN_USER || !ADMIN_PASS || !ADMIN_NAME || !ADMIN_SURNAME) {
+if (!ADMIN_USER || !ADMIN_PASS || !ADMIN_NAME) {
   console.error('Error: Faltan variables de entorno para la cuenta de administrador por defecto');
   process.exit(1);
 }
@@ -36,7 +36,7 @@ export const administrador = async () => {
       );
 
       await Administrador.create(
-        { id: crypto.randomUUID(), usuario: usuarioUUID, nombre: ADMIN_NAME, apellido: ADMIN_SURNAME },
+        { id: crypto.randomUUID(), usuario: usuarioUUID, nombre: ADMIN_NAME },
         { transaction: transaccion },
       );
     });
