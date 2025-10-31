@@ -6,7 +6,7 @@ import { specs } from '../swagger.mjs';
 import { transportador } from './config/correo.config.mjs';
 import { sequelize } from './config/database.config.mjs';
 import { rutas } from './rutas/index.mjs';
-import { administrador } from './utils/administrador.mjs';
+import { administrador } from './servicios/cuentas/administrador.mjs';
 
 const app = express();
 
