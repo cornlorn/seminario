@@ -1,4 +1,4 @@
-import { transportador } from '../config/email.config.mjs';
+import { transportador } from '../config/correo.config.mjs';
 import { plantillaBienvenida } from '../plantillas/bienvenida.plantilla.mjs';
 import { plantillaRecuperacion } from '../plantillas/recuperacion.plantilla.mjs';
 import { plantillaRestablecimiento } from '../plantillas/restablecimiento.plantilla.mjs';

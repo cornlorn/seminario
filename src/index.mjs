@@ -3,8 +3,8 @@ import express from 'express';
 import morgan from 'morgan';
 import swaggerUI from 'swagger-ui-express';
 import { specs } from '../swagger.mjs';
+import { transportador } from './config/correo.config.mjs';
 import { sequelize } from './config/database.config.mjs';
-import { transportador } from './config/email.config.mjs';
 import { rutas } from './rutas/index.mjs';
 import { administrador } from './utils/administrador.mjs';
 
