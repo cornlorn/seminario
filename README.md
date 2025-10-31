@@ -52,6 +52,9 @@ EMAIL_PASS=
 
 # Servidor
 PORT=
+
+# Aplicación
+APP_NAME=LOTO
 ```
 
 ---
