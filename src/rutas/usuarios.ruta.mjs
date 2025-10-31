@@ -103,17 +103,6 @@ router.post('/registrar', validarRegistro, validar, registrar);
  *     responses:
  *       200:
  *         description: Inicio de sesión exitoso, devuelve un token JWT
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 mensaje:
- *                   type: string
- *                   example: Inicio de sesión exitoso
- *                 token:
- *                   type: string
- *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
  *       400:
  *         description: Error de validación en los datos enviados
  *       401:
@@ -149,14 +138,6 @@ router.post('/ingresar', validarIngreso, validar, ingresar);
  *     responses:
  *       200:
  *         description: Solicitud procesada correctamente (si el correo existe, se envía un código de recuperación)
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 mensaje:
- *                   type: string
- *                   example: Si el correo existe, recibirás un código de recuperación
  *       400:
  *         description: Error de validación en el correo enviado
  *       500:
@@ -194,34 +175,10 @@ router.post('/solicitar', validarSolicitud, validar, solicitar);
  *     responses:
  *       200:
  *         description: Contraseña restablecida exitosamente
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 mensaje:
- *                   type: string
- *                   example: Contraseña restablecida exitosamente
  *       400:
  *         description: Código inválido/expirado, usuario no encontrado o error de validación en los datos
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 mensaje:
- *                   type: string
- *                   example: Código de recuperación inválido o expirado
  *       500:
  *         description: Error interno del servidor al procesar la solicitud
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 mensaje:
- *                   type: string
- *                   example: Error interno del servidor
  */
 router.post('/restablecer', validarRestablecimiento, validar, restablecer);
 
@@ -251,26 +208,6 @@ router.post('/restablecer', validarRestablecimiento, validar, restablecer);
  *     responses:
  *       200:
  *         description: Avatar actualizado exitosamente
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 mensaje:
- *                   type: string
- *                   example: Avatar subido exitosamente
- *                 avatar:
- *                   type: object
- *                   properties:
- *                     url:
- *                       type: string
- *                       example: /usuarios/abc-123/avatar-1234567890.jpg
- *                     filename:
- *                       type: string
- *                       example: avatar-1234567890.jpg
- *                     size:
- *                       type: number
- *                       example: 524288
  *       400:
  *         description: Error en el archivo (tamaño, formato o no proporcionado)
  *       401:
@@ -303,4 +240,3 @@ router.put('/avatar', autenticar, subirAvatar, manejarErroresMulter, actualizar)
 router.delete('/avatar', autenticar, eliminar);
 
 export { router as rutasUsuarios };
-
