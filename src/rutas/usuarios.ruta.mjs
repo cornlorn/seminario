@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { cambiarContrasena } from '../controladores/auth/cambiar-contrasena.controlador.mjs';
 import { ingresar } from '../controladores/auth/ingresar.controlador.mjs';
 import { registrar } from '../controladores/auth/registrar.controlador.mjs';
 import { restablecer } from '../controladores/auth/restablecer.controlador.mjs';
@@ -8,6 +9,7 @@ import { eliminar } from '../controladores/avatar/eliminar.controller.mjs';
 import { autenticar } from '../middlewares/auth.middleware.mjs';
 import { manejarErroresMulter, subirAvatar } from '../middlewares/multer.middleware.mjs';
 import { validar } from '../middlewares/validacion.middleware.mjs';
+import { validarCambioContrasena } from '../validaciones/cambio-contrasena.validacion.mjs';
 import { validarIngreso } from '../validaciones/ingresar.validacion.mjs';
 import { validarRegistro } from '../validaciones/registrar.validacion.mjs';
 import { validarRestablecimiento } from '../validaciones/restablecer.validacion.mjs';
@@ -181,6 +183,56 @@ router.post('/solicitar', validarSolicitud, validar, solicitar);
  *         description: Error interno del servidor al procesar la solicitud
  */
 router.post('/restablecer', validarRestablecimiento, validar, restablecer);
+
+/**
+ * @swagger
+ * /usuarios/cambiar-contrasena:
+ *   put:
+ *     summary: Cambia la contraseña del usuario autenticado
+ *     description: Permite al usuario cambiar su contraseña proporcionando la contraseña actual y la nueva contraseña
+ *     tags:
+ *       - Autenticación
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - contrasena_actual
+ *               - contrasena_nueva
+ *               - confirmar_contrasena
+ *             properties:
+ *               contrasena_actual:
+ *                 type: string
+ *                 format: password
+ *                 description: Contraseña actual del usuario
+ *                 example: ContrasenaActual123
+ *               contrasena_nueva:
+ *                 type: string
+ *                 format: password
+ *                 description: Nueva contraseña (mín. 8 caracteres, 1 mayúscula, 1 número)
+ *                 example: NuevaContrasena456
+ *               confirmar_contrasena:
+ *                 type: string
+ *                 format: password
+ *                 description: Confirmación de la nueva contraseña
+ *                 example: NuevaContrasena456
+ *     responses:
+ *       200:
+ *         description: Contraseña actualizada exitosamente
+ *       400:
+ *         description: Error de validación (contraseñas no coinciden, no cumple requisitos, etc.)
+ *       401:
+ *         description: Token inválido o contraseña actual incorrecta
+ *       404:
+ *         description: Usuario no encontrado
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.put('/cambiar-contrasena', autenticar, validarCambioContrasena, validar, cambiarContrasena);
 
 /**
  * @swagger
