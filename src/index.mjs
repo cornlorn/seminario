@@ -25,7 +25,7 @@ app.use('/public', express.static('public'));
 
 try {
   await sequelize.authenticate();
-  await sequelize.sync({ force: true });
+  await sequelize.sync({ alter: true });
   await administrador();
   await inicializarDiaria();
   await transportador.verify();

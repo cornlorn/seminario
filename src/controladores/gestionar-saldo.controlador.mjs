@@ -1,7 +1,7 @@
 import { sequelize } from '../config/database.config.mjs';
 import { Billetera, Jugador, Notificacion, Transaccion, Usuario, Vendedor } from '../modelos/index.mjs';
-// import { correoDepositoSaldo } from '../../servicios/correo/deposito-saldo.mjs';
-// import { correoRetiroSaldo } from '../../servicios/correo/retiro-saldo.mjs';
+import { correoDepositoSaldo } from '../servicios/correo/deposito-saldo.correo.mjs';
+import { correoRetiroSaldo } from '../servicios/correo/retiro-saldo.correo.mjs';
 
 // Montos predeterminados para recargas
 export const MONTOS_PREDETERMINADOS = [25, 50, 100, 200, 500, 1000];
