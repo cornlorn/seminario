@@ -1,16 +1,13 @@
 import { Op } from 'sequelize';
 import { Modalidad, Sorteo } from '../modelos/index.mjs';
 
-// Horarios de sorteos diarios (hora local Honduras GMT-6)
 const HORARIOS_SORTEOS = ['11:00:00', '15:00:00', '21:00:00'];
 
 /**
- * Crea sorteos automáticos para los próximos días
- * @param {number} diasAdelante - Cantidad de días hacia adelante para crear sorteos
+ * @param {number} diasAdelante
  */
 export const crearSorteosAutomaticos = async (diasAdelante = 7) => {
   try {
-    // Obtener la modalidad Diaria Simple
     const modalidad = await Modalidad.findOne({ where: { nombre: 'Diaria Simple', estado: 'Activo' } });
 
     if (!modalidad) {
@@ -21,42 +18,36 @@ export const crearSorteosAutomaticos = async (diasAdelante = 7) => {
     const fechaActual = new Date();
     const sorteosCreados = [];
 
-    // Crear sorteos para los próximos días
     for (let dia = 0; dia < diasAdelante; dia++) {
       const fecha = new Date(fechaActual);
       fecha.setDate(fecha.getDate() + dia);
-      const fechaStr = fecha.toISOString().split('T')[0]; // YYYY-MM-DD
+      const fechaStr = fecha.toISOString().split('T')[0];
 
       for (const hora of HORARIOS_SORTEOS) {
-        // Verificar si ya existe el sorteo
         const sorteoExistente = await Sorteo.findOne({
           where: { modalidad: modalidad.id, fecha: fechaStr, hora: hora },
         });
 
         if (!sorteoExistente) {
-          // Crear fecha y hora completa del sorteo
           const [horas, minutos] = hora.split(':');
           const fechaSorteo = new Date(fecha);
           fechaSorteo.setHours(parseInt(horas), parseInt(minutos), 0, 0);
 
-          // Fecha de cierre de compras (15 minutos antes)
           const fechaCierre = new Date(fechaSorteo);
           fechaCierre.setMinutes(fechaCierre.getMinutes() - 15);
 
-          // Determinar estado inicial
           let estado = 'Pendiente';
           const ahora = new Date();
 
           if (ahora >= fechaSorteo) {
-            estado = 'Finalizado'; // Ya pasó, no crear
+            estado = 'Finalizado';
             continue;
           } else if (ahora >= fechaCierre) {
             estado = 'Cerrado';
           } else if (ahora >= new Date(fechaSorteo.getTime() - 24 * 60 * 60 * 1000)) {
-            estado = 'Abierto'; // 24 horas antes
+            estado = 'Abierto';
           }
 
-          // Crear sorteo
           const nuevoSorteo = await Sorteo.create({
             id: crypto.randomUUID(),
             modalidad: modalidad.id,
@@ -77,7 +68,7 @@ export const crearSorteosAutomaticos = async (diasAdelante = 7) => {
     }
 
     if (sorteosCreados.length > 0) {
-      console.log(`✓ ${sorteosCreados.length} sorteos automáticos creados`);
+      console.log(`${sorteosCreados.length} sorteos automáticos creados`);
     }
 
     return sorteosCreados;
@@ -88,14 +79,10 @@ export const crearSorteosAutomaticos = async (diasAdelante = 7) => {
   }
 };
 
-/**
- * Actualiza el estado de los sorteos según la fecha y hora actual
- */
 export const actualizarEstadoSorteos = async () => {
   try {
     const ahora = new Date();
 
-    // Abrir sorteos que están dentro de las 24 horas previas
     await Sorteo.update(
       { estado: 'Abierto' },
       {
@@ -106,7 +93,6 @@ export const actualizarEstadoSorteos = async () => {
       },
     );
 
-    // Cerrar sorteos que llegaron a su hora de cierre
     await Sorteo.update(
       { estado: 'Cerrado' },
       { where: { estado: 'Abierto', fecha_cierre_compras: { [Op.lte]: ahora }, fecha_sorteo: { [Op.gt]: ahora } } },
@@ -120,17 +106,11 @@ export const actualizarEstadoSorteos = async () => {
   }
 };
 
-/**
- * Inicia el proceso de creación y actualización automática de sorteos
- */
 export const iniciarSorteosAutomaticos = () => {
-  // Crear sorteos al iniciar
   crearSorteosAutomaticos(7);
 
-  // Actualizar estados cada minuto
   setInterval(actualizarEstadoSorteos, 60 * 1000);
 
-  // Crear nuevos sorteos cada día a la medianoche
   setInterval(
     () => {
       crearSorteosAutomaticos(7);
@@ -138,5 +118,5 @@ export const iniciarSorteosAutomaticos = () => {
     24 * 60 * 60 * 1000,
   );
 
-  console.log('✓ Sistema de sorteos automáticos iniciado');
+  console.log('Sistema de sorteos automáticos iniciado');
 };

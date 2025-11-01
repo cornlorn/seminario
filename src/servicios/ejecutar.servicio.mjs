@@ -14,8 +14,7 @@ import { correoResultadoSorteo } from './correo/resultado-sorteo.correo.mjs';
 import { correoPremioGanado } from './correo/premio-ganado.correo.mjs';
 
 /**
- * Genera un número ganador aleatorio entre 00 y 99
- * @returns {string} Número ganador en formato de 2 dígitos (00-99)
+ * @returns {string}
  */
 const generarNumeroGanador = () => {
   const numero = Math.floor(Math.random() * 100);
@@ -23,14 +22,12 @@ const generarNumeroGanador = () => {
 };
 
 /**
- * Ejecuta un sorteo: genera número ganador y procesa premios
- * @param {string} sorteoId - ID del sorteo a ejecutar
+ * @param {string} sorteoId
  */
 export const ejecutarSorteo = async (sorteoId) => {
   const transaction = await sequelize.transaction();
 
   try {
-    // Obtener el sorteo
     const sorteo = await Sorteo.findByPk(sorteoId, {
       include: [{ model: Modalidad, as: 'modalidadDetalles' }],
       transaction,
@@ -44,13 +41,10 @@ export const ejecutarSorteo = async (sorteoId) => {
       throw new Error('El sorteo debe estar cerrado para poder ejecutarse');
     }
 
-    // Generar número ganador
     const numeroGanador = generarNumeroGanador();
 
-    // Actualizar sorteo con número ganador
     await sorteo.update({ numero_ganador: numeroGanador, estado: 'Finalizado' }, { transaction });
 
-    // Buscar boletos ganadores
     const boletosGanadores = await Boleto.findAll({
       where: { sorteo: sorteoId, numero_seleccionado: numeroGanador, estado: 'Activo' },
       include: [
@@ -66,7 +60,6 @@ export const ejecutarSorteo = async (sorteoId) => {
       transaction,
     });
 
-    // Actualizar boletos perdedores
     await Boleto.update(
       { estado: 'Perdedor' },
       { where: { sorteo: sorteoId, numero_seleccionado: { [Op.ne]: numeroGanador }, estado: 'Activo' }, transaction },
@@ -75,21 +68,17 @@ export const ejecutarSorteo = async (sorteoId) => {
     let totalPremios = 0;
     const ganadores = [];
 
-    // Procesar cada boleto ganador
     for (const boleto of boletosGanadores) {
       const montoGanado = boleto.monto_apostado * sorteo.modalidadDetalles.multiplicador_premio;
 
-      // Actualizar boleto como ganador
       await boleto.update({ estado: 'Ganador', monto_ganado: montoGanado }, { transaction });
 
-      // Acreditar premio a la billetera
       const billetera = boleto.jugadorDetalles.billetera;
       const saldoAnterior = parseFloat(billetera.saldo);
       const saldoNuevo = saldoAnterior + montoGanado;
 
       await billetera.update({ saldo: saldoNuevo }, { transaction });
 
-      // Crear transacción de premio
       await Transaccion.create(
         {
           id: crypto.randomUUID(),
@@ -110,7 +99,6 @@ export const ejecutarSorteo = async (sorteoId) => {
         { transaction },
       );
 
-      // Crear notificación de premio
       await Notificacion.create(
         {
           id: crypto.randomUUID(),
@@ -131,14 +119,11 @@ export const ejecutarSorteo = async (sorteoId) => {
       ganadores.push({ jugador: boleto.jugadorDetalles, boleto: boleto, montoGanado: montoGanado });
     }
 
-    // Actualizar total de premios del sorteo
     await sorteo.update({ total_premios: totalPremios }, { transaction });
 
     await transaction.commit();
 
-    // Enviar correos de manera asíncrona (fuera de la transacción)
     process.nextTick(async () => {
-      // Enviar correos a ganadores
       for (const { jugador, boleto, montoGanado } of ganadores) {
         try {
           await correoPremioGanado(
@@ -156,7 +141,6 @@ export const ejecutarSorteo = async (sorteoId) => {
         }
       }
 
-      // Enviar correos de resultados a todos los participantes
       const todosLosBoletos = await Boleto.findAll({
         where: { sorteo: sorteoId },
         include: [{ model: Jugador, as: 'jugadorDetalles', include: [{ model: Usuario, as: 'usuarioDetalles' }] }],
@@ -179,10 +163,10 @@ export const ejecutarSorteo = async (sorteoId) => {
       }
     });
 
-    console.log(`✓ Sorteo ${sorteo.id} ejecutado exitosamente`);
-    console.log(`  Número ganador: ${numeroGanador}`);
-    console.log(`  Boletos ganadores: ${boletosGanadores.length}`);
-    console.log(`  Total premios: L${totalPremios.toFixed(2)}`);
+    console.log(`Sorteo ${sorteo.id} ejecutado exitosamente`);
+    console.log(`Número ganador: ${numeroGanador}`);
+    console.log(`Boletos ganadores: ${boletosGanadores.length}`);
+    console.log(`Total premios: L${totalPremios.toFixed(2)}`);
 
     return {
       success: true,
@@ -199,14 +183,10 @@ export const ejecutarSorteo = async (sorteoId) => {
   }
 };
 
-/**
- * Ejecuta automáticamente los sorteos que llegaron a su hora
- */
 export const ejecutarSorteosAutomaticos = async () => {
   try {
     const ahora = new Date();
 
-    // Buscar sorteos cerrados cuya hora de sorteo ya pasó
     const sorteosParaEjecutar = await Sorteo.findAll({
       where: { estado: 'Cerrado', fecha_sorteo: { [Op.lte]: ahora } },
     });
@@ -227,12 +207,8 @@ export const ejecutarSorteosAutomaticos = async () => {
   }
 };
 
-/**
- * Inicia el proceso de ejecución automática de sorteos
- */
 export const iniciarEjecucionAutomatica = () => {
-  // Verificar sorteos cada minuto
   setInterval(ejecutarSorteosAutomaticos, 60 * 1000);
 
-  console.log('✓ Sistema de ejecución automática de sorteos iniciado');
+  console.log('Sistema de ejecución automática de sorteos iniciado');
 };

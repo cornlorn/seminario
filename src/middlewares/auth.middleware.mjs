@@ -36,7 +36,21 @@ export const autenticar = async (request, response, next) => {
 
 export const verificarAdministrador = (request, response, next) => {
   if (request.usuario.rol !== 'Administrador') {
-    return response.status(403).json({ error: 'Acceso denegado' });
+    return response.status(403).json({ error: 'Acceso denegado. Se requiere rol de Administrador' });
+  }
+  return next();
+};
+
+export const verificarVendedor = (request, response, next) => {
+  if (request.usuario.rol !== 'Vendedor') {
+    return response.status(403).json({ error: 'Acceso denegado. Se requiere rol de Vendedor' });
+  }
+  return next();
+};
+
+export const verificarAdminOVendedor = (request, response, next) => {
+  if (request.usuario.rol !== 'Administrador' && request.usuario.rol !== 'Vendedor') {
+    return response.status(403).json({ error: 'Acceso denegado. Se requiere rol de Administrador o Vendedor' });
   }
   return next();
 };

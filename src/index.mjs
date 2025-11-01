@@ -30,7 +30,6 @@ try {
   await inicializarDiaria();
   await transportador.verify();
 
-  // Iniciar sistemas automáticos
   iniciarSorteosAutomaticos();
   iniciarEjecucionAutomatica();
 

@@ -9,9 +9,13 @@ import { Sorteo } from './sorteo.modelo.mjs';
 import { Token } from './token.modelo.mjs';
 import { Transaccion } from './transaccion.modelo.mjs';
 import { Usuario } from './usuario.modelo.mjs';
+import { Vendedor } from './vendedor.modelo.mjs';
 
 Usuario.hasOne(Administrador, { foreignKey: 'usuario', as: 'administrador' });
 Administrador.belongsTo(Usuario, { foreignKey: 'usuario', as: 'usuarioDetalles' });
+
+Usuario.hasOne(Vendedor, { foreignKey: 'usuario', as: 'vendedor' });
+Vendedor.belongsTo(Usuario, { foreignKey: 'usuario', as: 'usuarioDetalles' });
 
 Usuario.hasMany(Token, { foreignKey: 'usuario', as: 'tokens' });
 Token.belongsTo(Usuario, { foreignKey: 'usuario', as: 'usuarioDetalles' });
@@ -30,6 +34,9 @@ Billetera.belongsTo(Jugador, { foreignKey: 'jugador', as: 'jugadorDetalles' });
 
 Jugador.hasMany(Boleto, { foreignKey: 'jugador', as: 'boletos' });
 Boleto.belongsTo(Jugador, { foreignKey: 'jugador', as: 'jugadorDetalles' });
+
+Vendedor.hasMany(Transaccion, { foreignKey: 'vendedor', as: 'transacciones' });
+Transaccion.belongsTo(Vendedor, { foreignKey: 'vendedor', as: 'vendedorDetalles' });
 
 Juego.hasMany(Modalidad, { foreignKey: 'juego', as: 'modalidades' });
 Modalidad.belongsTo(Juego, { foreignKey: 'juego', as: 'juegoDetalles' });
@@ -52,4 +59,5 @@ export {
   Token,
   Transaccion,
   Usuario,
+  Vendedor,
 };

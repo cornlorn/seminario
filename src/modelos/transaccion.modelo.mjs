@@ -26,6 +26,14 @@ export const Transaccion = sequelize.define(
     saldo_anterior: { type: DataTypes.DECIMAL(10, 2), allowNull: false, comment: 'Saldo antes de la transacción' },
     saldo_nuevo: { type: DataTypes.DECIMAL(10, 2), allowNull: false, comment: 'Saldo después de la transacción' },
     referencia: { type: DataTypes.STRING, allowNull: true, comment: 'ID de referencia (boleto_id, sorteo_id, etc)' },
+    vendedor: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      references: { model: 'vendedores', key: 'id' },
+      onDelete: 'SET NULL',
+      onUpdate: 'CASCADE',
+      comment: 'ID del vendedor que procesó la transacción (si aplica)',
+    },
     metadata: { type: DataTypes.JSON, allowNull: true, comment: 'Información adicional en formato JSON' },
   },
   {
