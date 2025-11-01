@@ -7,6 +7,9 @@ import { transportador } from './config/correo.config.mjs';
 import { sequelize } from './config/database.config.mjs';
 import { rutas } from './rutas/index.mjs';
 import { administrador } from './servicios/cuentas/administrador.mjs';
+import { inicializarDiaria } from './servicios/juegos/diaria.servicio.mjs';
+import { iniciarEjecucionAutomatica } from './servicios/ejecutar.servicio.mjs';
+import { iniciarSorteosAutomaticos } from './servicios/sorteos.servicio.mjs';
 
 const app = express();
 
@@ -24,7 +27,13 @@ try {
   await sequelize.authenticate();
   await sequelize.sync({ force: true });
   await administrador();
+  await inicializarDiaria();
   await transportador.verify();
+
+  // Iniciar sistemas automáticos
+  iniciarSorteosAutomaticos();
+  iniciarEjecucionAutomatica();
+
   app.listen(PORT, () => {
     console.log(`Servidor ejecutándose en: http://localhost:${PORT}`);
     console.log(`Documentación disponible en: http://localhost:${PORT}/api/docs`);
