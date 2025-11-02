@@ -1,5 +1,5 @@
 import crypto from 'node:crypto';
-import { Jugador, Token, Usuario } from '../../modelos/index.mjs';
+import { Token, Usuario } from '../../modelos/index.mjs';
 import { correoSolicitud } from '../../servicios/correo/solicitud.mjs';
 
 /**
