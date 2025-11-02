@@ -27,7 +27,6 @@ const generarContrasena = () => {
 };
 
 /**
- * Crea un nuevo usuario (Admin, Vendedor o Jugador)
  * @param {import("express").Request} request
  * @param {import("express").Response} response
  */
@@ -37,14 +36,12 @@ export const crearUsuario = async (request, response) => {
   const transaction = await sequelize.transaction();
 
   try {
-    // Validar que el rol sea válido
     const rolesValidos = ['Administrador', 'Vendedor', 'Jugador'];
     if (!rolesValidos.includes(rol)) {
       await transaction.rollback();
       return response.status(400).json({ mensaje: 'Rol inválido. Debe ser Administrador, Vendedor o Jugador' });
     }
 
-    // Verificar que el correo no exista
     const usuarioExistente = await Usuario.findOne({ where: { correo }, transaction });
 
     if (usuarioExistente) {
@@ -52,7 +49,6 @@ export const crearUsuario = async (request, response) => {
       return response.status(409).json({ mensaje: 'El correo electrónico ya está registrado' });
     }
 
-    // Validar campos requeridos según el rol
     if (rol === 'Administrador' && !nombre) {
       await transaction.rollback();
       return response.status(400).json({ mensaje: 'El nombre es requerido para administradores' });
@@ -72,11 +68,9 @@ export const crearUsuario = async (request, response) => {
       }
     }
 
-    // Generar contraseña automática
     const contrasenaGenerada = generarContrasena();
     const contrasenaEncriptada = await bcrypt.hash(contrasenaGenerada, 10);
 
-    // Crear usuario
     const usuarioNuevo = await Usuario.create(
       { id: crypto.randomUUID(), correo, contrasena: contrasenaEncriptada, rol },
       { transaction },
@@ -92,7 +86,6 @@ export const crearUsuario = async (request, response) => {
       },
     };
 
-    // Crear perfil según el rol
     if (rol === 'Administrador') {
       const adminNuevo = await Administrador.create(
         { id: crypto.randomUUID(), usuario: usuarioNuevo.id, nombre },
@@ -141,12 +134,11 @@ export const crearUsuario = async (request, response) => {
           nombre,
           apellido,
           telefono,
-          nacimiento: request.body.nacimiento || new Date('2000-01-01'), // Fecha por defecto
+          nacimiento: request.body.nacimiento || new Date('2000-01-01'),
         },
         { transaction },
       );
 
-      // Crear billetera con saldo inicial
       const saldoInicial = saldo_inicial ? parseFloat(saldo_inicial) : 0.0;
 
       if (saldoInicial < 0) {
@@ -170,7 +162,6 @@ export const crearUsuario = async (request, response) => {
 
     await transaction.commit();
 
-    // Enviar correo con credenciales
     process.nextTick(async () => {
       try {
         await correoCredencialesNuevaCuenta(correo, contrasenaGenerada, rol, nombre);

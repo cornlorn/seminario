@@ -2,7 +2,6 @@ import { Op } from 'sequelize';
 import { Juego, Modalidad, Sorteo } from '../modelos/index.mjs';
 
 /**
- * Lista los sorteos disponibles para comprar boletos
  * @param {import("express").Request} request
  * @param {import("express").Response} response
  */
@@ -10,7 +9,6 @@ export const listarSorteosDisponibles = async (request, response) => {
   try {
     const ahora = new Date();
 
-    // Buscar sorteos abiertos (acepta compras)
     const sorteos = await Sorteo.findAll({
       where: { estado: 'Abierto', fecha_cierre_compras: { [Op.gt]: ahora } },
       include: [
@@ -62,7 +60,6 @@ export const listarSorteosDisponibles = async (request, response) => {
 };
 
 /**
- * Obtiene los detalles de un sorteo específico
  * @param {import("express").Request} request
  * @param {import("express").Response} response
  */

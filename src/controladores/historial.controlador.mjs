@@ -2,7 +2,6 @@ import { Op } from 'sequelize';
 import { Boleto, Jugador, Modalidad, Sorteo, Transaccion } from '../modelos/index.mjs';
 
 /**
- * Obtiene el historial de boletos del usuario autenticado
  * @param {import("express").Request} request
  * @param {import("express").Response} response
  */
@@ -11,25 +10,21 @@ export const misBoletos = async (request, response) => {
     const usuarioId = request.usuario.id;
     const { estado, limite = 50, pagina = 1 } = request.query;
 
-    // Obtener jugador
     const jugador = await Jugador.findOne({ where: { usuario: usuarioId } });
 
     if (!jugador) {
       return response.status(404).json({ mensaje: 'Perfil de jugador no encontrado' });
     }
 
-    // Construir filtros
     const where = { jugador: jugador.id };
     if (estado) {
       where.estado = estado;
     }
 
-    // Calcular paginación
     const limiteInt = parseInt(limite);
     const paginaInt = parseInt(pagina);
     const offset = (paginaInt - 1) * limiteInt;
 
-    // Obtener boletos
     const { count, rows: boletos } = await Boleto.findAndCountAll({
       where,
       include: [{ model: Sorteo, as: 'sorteoDetalles', include: [{ model: Modalidad, as: 'modalidadDetalles' }] }],
@@ -70,7 +65,6 @@ export const misBoletos = async (request, response) => {
 };
 
 /**
- * Obtiene el historial de transacciones del usuario autenticado
  * @param {import("express").Request} request
  * @param {import("express").Response} response
  */
@@ -79,18 +73,15 @@ export const misTransacciones = async (request, response) => {
     const usuarioId = request.usuario.id;
     const { tipo, limite = 50, pagina = 1 } = request.query;
 
-    // Construir filtros
     const where = { usuario: usuarioId };
     if (tipo) {
       where.tipo = tipo;
     }
 
-    // Calcular paginación
     const limiteInt = parseInt(limite);
     const paginaInt = parseInt(pagina);
     const offset = (paginaInt - 1) * limiteInt;
 
-    // Obtener transacciones
     const { count, rows: transacciones } = await Transaccion.findAndCountAll({
       where,
       order: [['creado', 'DESC']],
@@ -124,7 +115,6 @@ export const misTransacciones = async (request, response) => {
 };
 
 /**
- * Obtiene estadísticas generales del usuario
  * @param {import("express").Request} request
  * @param {import("express").Response} response
  */
@@ -132,20 +122,17 @@ export const misEstadisticas = async (request, response) => {
   try {
     const usuarioId = request.usuario.id;
 
-    // Obtener jugador
     const jugador = await Jugador.findOne({ where: { usuario: usuarioId } });
 
     if (!jugador) {
       return response.status(404).json({ mensaje: 'Perfil de jugador no encontrado' });
     }
 
-    // Estadísticas de boletos
     const totalBoletos = await Boleto.count({ where: { jugador: jugador.id } });
     const boletosGanadores = await Boleto.count({ where: { jugador: jugador.id, estado: 'Ganador' } });
     const boletosPerdedores = await Boleto.count({ where: { jugador: jugador.id, estado: 'Perdedor' } });
     const boletosActivos = await Boleto.count({ where: { jugador: jugador.id, estado: 'Activo' } });
 
-    // Montos apostados y ganados
     const boletos = await Boleto.findAll({
       where: { jugador: jugador.id },
       attributes: ['monto_apostado', 'monto_ganado', 'estado'],
@@ -161,7 +148,6 @@ export const misEstadisticas = async (request, response) => {
       }
     }
 
-    // Último boleto ganador
     const ultimoBoletoGanador = await Boleto.findOne({
       where: { jugador: jugador.id, estado: 'Ganador' },
       include: [{ model: Sorteo, as: 'sorteoDetalles' }],

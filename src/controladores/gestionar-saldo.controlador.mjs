@@ -3,16 +3,13 @@ import { Billetera, Jugador, Notificacion, Transaccion, Usuario, Vendedor } from
 import { correoDepositoSaldo } from '../servicios/correo/deposito-saldo.correo.mjs';
 import { correoRetiroSaldo } from '../servicios/correo/retiro-saldo.correo.mjs';
 
-// Montos predeterminados para recargas
 export const MONTOS_PREDETERMINADOS = [25, 50, 100, 200, 500, 1000];
 
-// Límites del sistema
 const MONTO_MINIMO_DEPOSITO = 25;
 const MONTO_MAXIMO_DEPOSITO = 1000;
 const MONTO_MAXIMO_RETIRO = 10000;
 
 /**
- * Agregar saldo a la cuenta de un jugador
  * @param {import("express").Request} request
  * @param {import("express").Response} response
  */
@@ -23,7 +20,6 @@ export const agregarSaldo = async (request, response) => {
     const { correo_jugador, monto } = request.body;
     const vendedorUsuarioId = request.usuario.id;
 
-    // Validar monto
     const montoFloat = parseFloat(monto);
 
     if (isNaN(montoFloat) || montoFloat <= 0) {
@@ -41,7 +37,6 @@ export const agregarSaldo = async (request, response) => {
       return response.status(400).json({ mensaje: `El monto máximo de depósito es L${MONTO_MAXIMO_DEPOSITO}` });
     }
 
-    // Obtener vendedor
     const vendedor = await Vendedor.findOne({
       where: { usuario: vendedorUsuarioId },
       include: [{ model: Usuario, as: 'usuarioDetalles' }],
@@ -53,7 +48,6 @@ export const agregarSaldo = async (request, response) => {
       return response.status(404).json({ mensaje: 'Perfil de vendedor no encontrado' });
     }
 
-    // Buscar jugador por correo
     const usuarioJugador = await Usuario.findOne({
       where: { correo: correo_jugador, rol: 'Jugador' },
       include: [{ model: Jugador, as: 'jugador', include: [{ model: Billetera, as: 'billetera' }] }],
@@ -68,16 +62,13 @@ export const agregarSaldo = async (request, response) => {
     const jugador = usuarioJugador.jugador;
     const billetera = jugador.billetera;
 
-    // Actualizar billetera
     const saldoAnterior = parseFloat(billetera.saldo);
     const saldoNuevo = saldoAnterior + montoFloat;
 
     await billetera.update({ saldo: saldoNuevo }, { transaction });
 
-    // Calcular comisión
     const comision = (montoFloat * parseFloat(vendedor.comision_porcentaje)) / 100;
 
-    // Crear transacción para el jugador
     const transaccionJugador = await Transaccion.create(
       {
         id: crypto.randomUUID(),
@@ -97,7 +88,6 @@ export const agregarSaldo = async (request, response) => {
       { transaction },
     );
 
-    // Actualizar estadísticas del vendedor
     await vendedor.update(
       {
         total_depositado: parseFloat(vendedor.total_depositado) + montoFloat,
@@ -106,7 +96,6 @@ export const agregarSaldo = async (request, response) => {
       { transaction },
     );
 
-    // Crear notificación para el jugador
     await Notificacion.create(
       {
         id: crypto.randomUUID(),
@@ -124,7 +113,6 @@ export const agregarSaldo = async (request, response) => {
 
     await transaction.commit();
 
-    // Enviar correos de manera asíncrona
     process.nextTick(async () => {
       try {
         await correoDepositoSaldo(
@@ -166,7 +154,6 @@ export const agregarSaldo = async (request, response) => {
 };
 
 /**
- * Retirar saldo de la cuenta de un jugador
  * @param {import("express").Request} request
  * @param {import("express").Response} response
  */
@@ -177,7 +164,6 @@ export const retirarSaldo = async (request, response) => {
     const { correo_jugador, monto } = request.body;
     const vendedorUsuarioId = request.usuario.id;
 
-    // Validar monto
     const montoFloat = parseFloat(monto);
 
     if (isNaN(montoFloat) || montoFloat <= 0) {
@@ -190,7 +176,6 @@ export const retirarSaldo = async (request, response) => {
       return response.status(400).json({ mensaje: `El monto máximo de retiro es L${MONTO_MAXIMO_RETIRO}` });
     }
 
-    // Obtener vendedor
     const vendedor = await Vendedor.findOne({
       where: { usuario: vendedorUsuarioId },
       include: [{ model: Usuario, as: 'usuarioDetalles' }],
@@ -202,7 +187,6 @@ export const retirarSaldo = async (request, response) => {
       return response.status(404).json({ mensaje: 'Perfil de vendedor no encontrado' });
     }
 
-    // Buscar jugador por correo
     const usuarioJugador = await Usuario.findOne({
       where: { correo: correo_jugador, rol: 'Jugador' },
       include: [{ model: Jugador, as: 'jugador', include: [{ model: Billetera, as: 'billetera' }] }],
@@ -217,7 +201,6 @@ export const retirarSaldo = async (request, response) => {
     const jugador = usuarioJugador.jugador;
     const billetera = jugador.billetera;
 
-    // Validar saldo suficiente
     const saldoAnterior = parseFloat(billetera.saldo);
 
     if (saldoAnterior < montoFloat) {
@@ -227,12 +210,10 @@ export const retirarSaldo = async (request, response) => {
         .json({ mensaje: `Saldo insuficiente. El jugador tiene L${saldoAnterior.toFixed(2)} disponible` });
     }
 
-    // Actualizar billetera
     const saldoNuevo = saldoAnterior - montoFloat;
 
     await billetera.update({ saldo: saldoNuevo }, { transaction });
 
-    // Crear transacción para el jugador
     const transaccionJugador = await Transaccion.create(
       {
         id: crypto.randomUUID(),
@@ -248,10 +229,8 @@ export const retirarSaldo = async (request, response) => {
       { transaction },
     );
 
-    // Actualizar estadísticas del vendedor
     await vendedor.update({ total_retirado: parseFloat(vendedor.total_retirado) + montoFloat }, { transaction });
 
-    // Crear notificación para el jugador
     await Notificacion.create(
       {
         id: crypto.randomUUID(),
@@ -269,7 +248,6 @@ export const retirarSaldo = async (request, response) => {
 
     await transaction.commit();
 
-    // Enviar correos de manera asíncrona
     process.nextTick(async () => {
       try {
         await correoRetiroSaldo(
@@ -310,7 +288,6 @@ export const retirarSaldo = async (request, response) => {
 };
 
 /**
- * Buscar jugador por correo (para obtener información básica)
  * @param {import("express").Request} request
  * @param {import("express").Response} response
  */
@@ -355,7 +332,6 @@ export const buscarJugador = async (request, response) => {
 };
 
 /**
- * Obtener historial de operaciones del vendedor
  * @param {import("express").Request} request
  * @param {import("express").Response} response
  */
@@ -364,25 +340,21 @@ export const misOperaciones = async (request, response) => {
     const vendedorUsuarioId = request.usuario.id;
     const { tipo, limite = 50, pagina = 1 } = request.query;
 
-    // Obtener vendedor
     const vendedor = await Vendedor.findOne({ where: { usuario: vendedorUsuarioId } });
 
     if (!vendedor) {
       return response.status(404).json({ mensaje: 'Perfil de vendedor no encontrado' });
     }
 
-    // Construir filtros
     const where = { vendedor: vendedor.id };
     if (tipo && (tipo === 'Deposito' || tipo === 'Retiro')) {
       where.tipo = tipo;
     }
 
-    // Calcular paginación
     const limiteInt = parseInt(limite);
     const paginaInt = parseInt(pagina);
     const offset = (paginaInt - 1) * limiteInt;
 
-    // Obtener transacciones
     const { count, rows: transacciones } = await Transaccion.findAndCountAll({
       where,
       include: [
@@ -425,7 +397,6 @@ export const misOperaciones = async (request, response) => {
 };
 
 /**
- * Obtener estadísticas del vendedor
  * @param {import("express").Request} request
  * @param {import("express").Response} response
  */
@@ -439,7 +410,6 @@ export const misEstadisticasVendedor = async (request, response) => {
       return response.status(404).json({ mensaje: 'Perfil de vendedor no encontrado' });
     }
 
-    // Contar operaciones
     const totalDepositos = await Transaccion.count({ where: { vendedor: vendedor.id, tipo: 'Deposito' } });
 
     const totalRetiros = await Transaccion.count({ where: { vendedor: vendedor.id, tipo: 'Retiro' } });

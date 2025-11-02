@@ -6,6 +6,7 @@ import { restablecer } from '../controladores/auth/restablecer.controlador.mjs';
 import { solicitar } from '../controladores/auth/solicitar.controlador.mjs';
 import { actualizar } from '../controladores/avatar/actualizar.controlador.mjs';
 import { eliminar } from '../controladores/avatar/eliminar.controller.mjs';
+import { miPerfil } from '../controladores/perfil.controlador.mjs';
 import { autenticar } from '../middlewares/auth.middleware.mjs';
 import { manejarErroresMulter, subirAvatar } from '../middlewares/multer.middleware.mjs';
 import { validar } from '../middlewares/validacion.middleware.mjs';
@@ -183,6 +184,57 @@ router.post('/solicitar', validarSolicitud, validar, solicitar);
  *         description: Error interno del servidor al procesar la solicitud
  */
 router.post('/restablecer', validarRestablecimiento, validar, restablecer);
+
+/**
+ * @swagger
+ * /usuarios/mi-perfil:
+ *   get:
+ *     summary: Obtiene el perfil completo del usuario autenticado
+ *     description: Retorna toda la información del usuario, estadísticas y actividad reciente según su rol (Admin, Vendedor o Jugador)
+ *     tags:
+ *       - Perfil
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Perfil obtenido exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Perfil obtenido exitosamente
+ *                 usuario:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                     correo:
+ *                       type: string
+ *                     rol:
+ *                       type: string
+ *                       enum: [Administrador, Vendedor, Jugador]
+ *                     estado:
+ *                       type: string
+ *                     fecha_registro:
+ *                       type: string
+ *                       format: date-time
+ *                 perfil:
+ *                   type: object
+ *                   description: Información específica según el rol
+ *                 estadisticas:
+ *                   type: object
+ *                   description: Estadísticas según el rol del usuario
+ *       401:
+ *         description: Token no proporcionado o inválido
+ *       404:
+ *         description: Usuario no encontrado
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get('/mi-perfil', autenticar, miPerfil);
 
 /**
  * @swagger

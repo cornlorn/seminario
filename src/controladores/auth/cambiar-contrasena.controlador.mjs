@@ -3,7 +3,6 @@ import { Usuario } from '../../modelos/index.mjs';
 import { correoCambioContrasena } from '../../servicios/correo/cambio-contrasena.correo.mjs';
 
 /**
- * Cambia la contraseña del usuario autenticado
  * @param {import("express").Request} request
  * @param {import("express").Response} response
  */
@@ -12,7 +11,6 @@ export const cambiarContrasena = async (request, response) => {
     const { contrasena_actual, contrasena_nueva } = request.body;
     const usuarioId = request.usuario.id;
 
-    // Obtener usuario
     const usuario = await Usuario.findByPk(usuarioId);
 
     if (!usuario) {
@@ -21,27 +19,22 @@ export const cambiarContrasena = async (request, response) => {
 
     console.log(usuario);
 
-    // Verificar contraseña actual
     const contrasenaValida = await bcrypt.compare(contrasena_actual, usuario.contrasena);
 
     if (!contrasenaValida) {
       return response.status(401).json({ mensaje: 'La contraseña actual es incorrecta' });
     }
 
-    // Verificar que la nueva contraseña sea diferente
     const mismaNueva = await bcrypt.compare(contrasena_nueva, usuario.contrasena);
 
     if (mismaNueva) {
       return response.status(400).json({ mensaje: 'La nueva contraseña debe ser diferente a la actual' });
     }
 
-    // Encriptar nueva contraseña
     const contrasenaEncriptada = await bcrypt.hash(contrasena_nueva, 10);
 
-    // Actualizar contraseña
     await usuario.update({ contrasena: contrasenaEncriptada });
 
-    // Enviar correo de confirmación de manera asíncrona
     process.nextTick(async () => {
       try {
         await correoCambioContrasena(usuario.correo);
