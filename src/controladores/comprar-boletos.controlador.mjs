@@ -167,17 +167,23 @@ export const comprarBoletos = async (request, response) => {
     const nuevoSaldo = saldoActual - montoTotal;
     await jugador.billetera.update({ saldo: nuevoSaldo }, { transaction });
 
+    const cantidad = boletosCreados.length;
+    const plural = cantidad > 1 ? 's' : '';
+    const horaFormateada = sorteo.hora.slice(0, 5);
+
+    const concepto = `Compra de ${cantidad} boleto${plural} para sorteo del ${sorteo.fecha} ${horaFormateada}`;
+
     await Transaccion.create(
       {
         id: crypto.randomUUID(),
         usuario: usuarioId,
         tipo: 'Compra',
-        concepto: `Compra de ${boletosCreados.length} boleto(s) para sorteo del ${sorteo.fecha} ${sorteo.hora}`,
+        concepto: concepto,
         monto: -montoTotal,
         saldo_anterior: saldoActual,
         saldo_nuevo: nuevoSaldo,
         referencia: sorteo_id,
-        metadata: { sorteo_id: sorteo_id, cantidad_boletos: boletosCreados.length, boletos: boletosValidados },
+        metadata: { sorteo_id, cantidad_boletos: cantidad, boletos: boletosValidados },
       },
       { transaction },
     );

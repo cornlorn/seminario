@@ -1,3 +1,8 @@
+/**
+ * Controlador: miPerfil (versión completa con utilidades integradas)
+ * Incluye perfiles de Administrador, Vendedor y Jugador con todas sus estadísticas.
+ */
+
 import { Op } from 'sequelize';
 import {
   Administrador,
@@ -10,275 +15,271 @@ import {
   Vendedor,
 } from '../modelos/index.mjs';
 
-/**
- * @param {import("express").Request} request
- * @param {import("express").Response} response
- */
+// =====================
+// 🔧 UTILIDADES GLOBALES
+// =====================
+
+export const formatoMonto = (valor) => parseFloat(valor || 0).toFixed(2);
+export const formatoFecha = (fecha) => new Date(fecha).toISOString();
+export const formatoHora = (fecha) => new Date(fecha).toTimeString().slice(0, 5);
+
+// =============================
+// 🧩 LÓGICA DE CADA TIPO DE PERFIL
+// =============================
+
+async function obtenerPerfilAdministrador(usuarioId) {
+  const admin = await Administrador.findOne({ where: { usuario: usuarioId } });
+  if (!admin) return {};
+
+  const [usuarios, jugadores, vendedores, sorteos, boletos] = await Promise.all([
+    Usuario.count(),
+    Jugador.count(),
+    Vendedor.count(),
+    Sorteo.count(),
+    Boleto.count(),
+  ]);
+
+  return {
+    perfil: { nombre: admin.nombre },
+    estadisticas_sistema: {
+      usuarios: { total: usuarios, jugadores, vendedores, administradores: usuarios - jugadores - vendedores },
+      sorteos: {
+        total: sorteos,
+        pendientes: await Sorteo.count({ where: { estado: 'Pendiente' } }),
+        abiertos: await Sorteo.count({ where: { estado: 'Abierto' } }),
+        finalizados: await Sorteo.count({ where: { estado: 'Finalizado' } }),
+      },
+      boletos: {
+        total: boletos,
+        activos: await Boleto.count({ where: { estado: 'Activo' } }),
+        ganadores: await Boleto.count({ where: { estado: 'Ganador' } }),
+      },
+    },
+  };
+}
+
+async function obtenerPerfilVendedor(usuarioId) {
+  const vendedor = await Vendedor.findOne({ where: { usuario: usuarioId } });
+  if (!vendedor) return {};
+
+  const [depositos, retiros, transacciones] = await Promise.all([
+    Transaccion.count({ where: { vendedor: vendedor.id, tipo: 'Deposito' } }),
+    Transaccion.count({ where: { vendedor: vendedor.id, tipo: 'Retiro' } }),
+    Transaccion.findAll({
+      where: { vendedor: vendedor.id },
+      include: [
+        {
+          model: Usuario,
+          as: 'usuarioDetalles',
+          attributes: ['correo'],
+          include: [{ model: Jugador, as: 'jugador', attributes: ['nombre', 'apellido'] }],
+        },
+      ],
+      order: [['creado', 'DESC']],
+      limit: 5,
+    }),
+  ]);
+
+  const ultimasOperaciones = transacciones.map((op) => ({
+    id: op.id,
+    tipo: op.tipo,
+    monto: formatoMonto(op.monto),
+    jugador: op.usuarioDetalles.jugador
+      ? `${op.usuarioDetalles.jugador.nombre} ${op.usuarioDetalles.jugador.apellido}`
+      : 'N/A',
+    fecha: formatoFecha(op.creado),
+  }));
+
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+  const operacionesHoy = await Transaccion.findAll({
+    where: { vendedor: vendedor.id, creado: { [Op.gte]: hoy } },
+    attributes: ['tipo', 'monto'],
+  });
+
+  let depositosHoy = 0,
+    retirosHoy = 0,
+    comisionesHoy = 0;
+
+  operacionesHoy.forEach((op) => {
+    if (op.tipo === 'Deposito') {
+      depositosHoy += parseFloat(op.monto);
+      comisionesHoy += (parseFloat(op.monto) * parseFloat(vendedor.comision_porcentaje)) / 100;
+    } else if (op.tipo === 'Retiro') {
+      retirosHoy += Math.abs(parseFloat(op.monto));
+    }
+  });
+
+  return {
+    perfil: {
+      nombre: vendedor.nombre,
+      apellido: vendedor.apellido,
+      telefono: vendedor.telefono,
+      direccion: vendedor.direccion,
+      comision_porcentaje: parseFloat(vendedor.comision_porcentaje),
+    },
+    estadisticas: {
+      depositos: { total: formatoMonto(vendedor.total_depositado), cantidad: depositos },
+      retiros: { total: formatoMonto(vendedor.total_retirado), cantidad: retiros },
+      comisiones: { total: formatoMonto(vendedor.total_comisiones) },
+    },
+    ultimas_operaciones: ultimasOperaciones,
+    resumen_hoy: {
+      depositos: formatoMonto(depositosHoy),
+      retiros: formatoMonto(retirosHoy),
+      comisiones_estimadas: formatoMonto(comisionesHoy),
+    },
+  };
+}
+
+async function obtenerPerfilJugador(usuarioId) {
+  const jugador = await Jugador.findOne({
+    where: { usuario: usuarioId },
+    include: [{ model: Billetera, as: 'billetera' }],
+  });
+  if (!jugador) return {};
+
+  const [total, activos, ganadores, perdedores] = await Promise.all([
+    Boleto.count({ where: { jugador: jugador.id } }),
+    Boleto.count({ where: { jugador: jugador.id, estado: 'Activo' } }),
+    Boleto.count({ where: { jugador: jugador.id, estado: 'Ganador' } }),
+    Boleto.count({ where: { jugador: jugador.id, estado: 'Perdedor' } }),
+  ]);
+
+  const boletos = await Boleto.findAll({
+    where: { jugador: jugador.id },
+    attributes: ['monto_apostado', 'monto_ganado'],
+  });
+  let totalApostado = 0,
+    totalGanado = 0;
+  boletos.forEach((b) => {
+    totalApostado += parseFloat(b.monto_apostado);
+    if (b.monto_ganado) totalGanado += parseFloat(b.monto_ganado);
+  });
+
+  const balance = totalGanado - totalApostado;
+
+  // Últimos boletos y transacciones
+  const [ultimosBoletos, ultimasTransacciones, ultimoPremio] = await Promise.all([
+    Boleto.findAll({
+      where: { jugador: jugador.id },
+      include: [{ model: Sorteo, as: 'sorteoDetalles', attributes: ['fecha', 'hora', 'numero_ganador', 'estado'] }],
+      order: [['creado', 'DESC']],
+      limit: 5,
+    }),
+    Transaccion.findAll({ where: { usuario: usuarioId }, order: [['creado', 'DESC']], limit: 5 }),
+    Boleto.findOne({
+      where: { jugador: jugador.id, estado: 'Ganador' },
+      include: [{ model: Sorteo, as: 'sorteoDetalles', attributes: ['fecha', 'hora'] }],
+      order: [['actualizado', 'DESC']],
+    }),
+  ]);
+
+  const ultimosBoletosFormat = ultimosBoletos.map((boleto) => ({
+    id: boleto.id,
+    numero: boleto.numero_seleccionado,
+    monto_apostado: formatoMonto(boleto.monto_apostado),
+    estado: boleto.estado,
+    premio: boleto.monto_ganado ? formatoMonto(boleto.monto_ganado) : null,
+    sorteo: {
+      fecha: boleto.sorteoDetalles.fecha,
+      hora: formatoHora(boleto.sorteoDetalles.hora),
+      numero_ganador: boleto.sorteoDetalles.numero_ganador,
+    },
+    fecha_compra: formatoFecha(boleto.fecha_compra),
+  }));
+
+  const ultimasTransaccionesFormat = ultimasTransacciones.map((t) => ({
+    id: t.id,
+    tipo: t.tipo,
+    concepto: t.concepto,
+    monto: formatoMonto(t.monto),
+    saldo_nuevo: formatoMonto(t.saldo_nuevo),
+    fecha: formatoFecha(t.creado),
+  }));
+
+  const ultimoPremioFormat = ultimoPremio
+    ? {
+        numero: ultimoPremio.numero_seleccionado,
+        monto: formatoMonto(ultimoPremio.monto_ganado),
+        fecha: formatoFecha(ultimoPremio.sorteoDetalles.fecha),
+        hora: formatoHora(ultimoPremio.sorteoDetalles.hora),
+      }
+    : null;
+
+  // Actividad mensual
+  const inicioMes = new Date();
+  inicioMes.setDate(1);
+  inicioMes.setHours(0, 0, 0, 0);
+
+  const [boletosEsteMes, premiosEsteMes] = await Promise.all([
+    Boleto.count({ where: { jugador: jugador.id, fecha_compra: { [Op.gte]: inicioMes } } }),
+    Boleto.count({ where: { jugador: jugador.id, estado: 'Ganador', actualizado: { [Op.gte]: inicioMes } } }),
+  ]);
+
+  return {
+    perfil: {
+      nombre: jugador.nombre,
+      apellido: jugador.apellido,
+      telefono: jugador.telefono,
+      nacimiento: jugador.nacimiento,
+      avatar: jugador.avatar,
+    },
+    billetera: { saldo_actual: formatoMonto(jugador.billetera.saldo) },
+    estadisticas: {
+      boletos: {
+        total,
+        activos,
+        ganadores,
+        perdedores,
+        tasa_victoria: total > 0 ? ((ganadores / (ganadores + perdedores)) * 100).toFixed(2) : '0.00',
+      },
+      montos: {
+        total_apostado: formatoMonto(totalApostado),
+        total_ganado: formatoMonto(totalGanado),
+        balance: formatoMonto(balance),
+        balance_positivo: balance >= 0,
+      },
+    },
+    ultimos_boletos: ultimosBoletosFormat,
+    ultimas_transacciones: ultimasTransaccionesFormat,
+    ultimo_premio: ultimoPremioFormat,
+    actividad_mes: { boletos_comprados: boletosEsteMes, premios_ganados: premiosEsteMes },
+  };
+}
+
+// ===========================
+// 🚀 CONTROLADOR PRINCIPAL
+// ===========================
+
 export const miPerfil = async (request, response) => {
   try {
-    const usuarioId = request.usuario.id;
-    const rol = request.usuario.rol;
-
+    const { id: usuarioId, rol } = request.usuario;
     const usuario = await Usuario.findByPk(usuarioId, {
       attributes: ['id', 'correo', 'rol', 'estado', 'creado', 'actualizado'],
     });
 
-    if (!usuario) {
-      return response.status(404).json({ mensaje: 'Usuario no encontrado' });
-    }
+    if (!usuario) return response.status(404).json({ mensaje: 'Usuario no encontrado' });
 
-    let perfilCompleto = {
+    const base = {
       usuario: {
         id: usuario.id,
         correo: usuario.correo,
         rol: usuario.rol,
         estado: usuario.estado,
-        fecha_registro: usuario.creado,
-        ultima_actualizacion: usuario.actualizado,
+        fecha_registro: formatoFecha(usuario.creado),
+        ultima_actualizacion: formatoFecha(usuario.actualizado),
       },
     };
 
-    if (rol === 'Administrador') {
-      const admin = await Administrador.findOne({ where: { usuario: usuarioId } });
+    let perfil = {};
+    if (rol === 'Administrador') perfil = await obtenerPerfilAdministrador(usuarioId);
+    if (rol === 'Vendedor') perfil = await obtenerPerfilVendedor(usuarioId);
+    if (rol === 'Jugador') perfil = await obtenerPerfilJugador(usuarioId);
 
-      if (admin) {
-        perfilCompleto.perfil = { nombre: admin.nombre };
-
-        const [totalUsuarios, totalJugadores, totalVendedores, totalSorteos, totalBoletos] = await Promise.all([
-          Usuario.count(),
-          Jugador.count(),
-          Vendedor.count(),
-          Sorteo.count(),
-          Boleto.count(),
-        ]);
-
-        perfilCompleto.estadisticas_sistema = {
-          usuarios: {
-            total: totalUsuarios,
-            jugadores: totalJugadores,
-            vendedores: totalVendedores,
-            administradores: totalUsuarios - totalJugadores - totalVendedores,
-          },
-          sorteos: {
-            total: totalSorteos,
-            pendientes: await Sorteo.count({ where: { estado: 'Pendiente' } }),
-            abiertos: await Sorteo.count({ where: { estado: 'Abierto' } }),
-            finalizados: await Sorteo.count({ where: { estado: 'Finalizado' } }),
-          },
-          boletos: {
-            total: totalBoletos,
-            activos: await Boleto.count({ where: { estado: 'Activo' } }),
-            ganadores: await Boleto.count({ where: { estado: 'Ganador' } }),
-          },
-        };
-      }
-    }
-
-    if (rol === 'Vendedor') {
-      const vendedor = await Vendedor.findOne({ where: { usuario: usuarioId } });
-
-      if (vendedor) {
-        perfilCompleto.perfil = {
-          nombre: vendedor.nombre,
-          apellido: vendedor.apellido,
-          telefono: vendedor.telefono,
-          direccion: vendedor.direccion,
-          comision_porcentaje: parseFloat(vendedor.comision_porcentaje),
-        };
-
-        perfilCompleto.estadisticas = {
-          depositos: {
-            total: parseFloat(vendedor.total_depositado).toFixed(2),
-            cantidad: await Transaccion.count({ where: { vendedor: vendedor.id, tipo: 'Deposito' } }),
-          },
-          retiros: {
-            total: parseFloat(vendedor.total_retirado).toFixed(2),
-            cantidad: await Transaccion.count({ where: { vendedor: vendedor.id, tipo: 'Retiro' } }),
-          },
-          comisiones: { total: parseFloat(vendedor.total_comisiones).toFixed(2) },
-        };
-
-        const ultimasOperaciones = await Transaccion.findAll({
-          where: { vendedor: vendedor.id },
-          include: [
-            {
-              model: Usuario,
-              as: 'usuarioDetalles',
-              attributes: ['correo'],
-              include: [{ model: Jugador, as: 'jugador', attributes: ['nombre', 'apellido'] }],
-            },
-          ],
-          order: [['creado', 'DESC']],
-          limit: 5,
-        });
-
-        perfilCompleto.ultimas_operaciones = ultimasOperaciones.map((op) => ({
-          id: op.id,
-          tipo: op.tipo,
-          monto: parseFloat(op.monto).toFixed(2),
-          jugador: op.usuarioDetalles.jugador
-            ? `${op.usuarioDetalles.jugador.nombre} ${op.usuarioDetalles.jugador.apellido}`
-            : 'N/A',
-          fecha: op.creado,
-        }));
-
-        const hoy = new Date();
-        hoy.setHours(0, 0, 0, 0);
-
-        const operacionesHoy = await Transaccion.findAll({
-          where: { vendedor: vendedor.id, creado: { [Op.gte]: hoy } },
-          attributes: ['tipo', 'monto'],
-        });
-
-        let depositosHoy = 0;
-        let retirosHoy = 0;
-        let comisionesHoy = 0;
-
-        operacionesHoy.forEach((op) => {
-          if (op.tipo === 'Deposito') {
-            depositosHoy += parseFloat(op.monto);
-            comisionesHoy += (parseFloat(op.monto) * parseFloat(vendedor.comision_porcentaje)) / 100;
-          } else if (op.tipo === 'Retiro') {
-            retirosHoy += Math.abs(parseFloat(op.monto));
-          }
-        });
-
-        perfilCompleto.resumen_hoy = {
-          depositos: depositosHoy.toFixed(2),
-          retiros: retirosHoy.toFixed(2),
-          comisiones_estimadas: comisionesHoy.toFixed(2),
-        };
-      }
-    }
-
-    if (rol === 'Jugador') {
-      const jugador = await Jugador.findOne({
-        where: { usuario: usuarioId },
-        include: [{ model: Billetera, as: 'billetera' }],
-      });
-
-      if (jugador) {
-        perfilCompleto.perfil = {
-          nombre: jugador.nombre,
-          apellido: jugador.apellido,
-          telefono: jugador.telefono,
-          nacimiento: jugador.nacimiento,
-          avatar: jugador.avatar,
-        };
-
-        perfilCompleto.billetera = { saldo_actual: parseFloat(jugador.billetera.saldo).toFixed(2) };
-
-        const [totalBoletos, boletosActivos, boletosGanadores, boletosPerdedores] = await Promise.all([
-          Boleto.count({ where: { jugador: jugador.id } }),
-          Boleto.count({ where: { jugador: jugador.id, estado: 'Activo' } }),
-          Boleto.count({ where: { jugador: jugador.id, estado: 'Ganador' } }),
-          Boleto.count({ where: { jugador: jugador.id, estado: 'Perdedor' } }),
-        ]);
-
-        const boletos = await Boleto.findAll({
-          where: { jugador: jugador.id },
-          attributes: ['monto_apostado', 'monto_ganado'],
-        });
-
-        let totalApostado = 0;
-        let totalGanado = 0;
-
-        boletos.forEach((boleto) => {
-          totalApostado += parseFloat(boleto.monto_apostado);
-          if (boleto.monto_ganado) {
-            totalGanado += parseFloat(boleto.monto_ganado);
-          }
-        });
-
-        const balance = totalGanado - totalApostado;
-
-        perfilCompleto.estadisticas = {
-          boletos: {
-            total: totalBoletos,
-            activos: boletosActivos,
-            ganadores: boletosGanadores,
-            perdedores: boletosPerdedores,
-            tasa_victoria:
-              totalBoletos > 0
-                ? ((boletosGanadores / (boletosGanadores + boletosPerdedores)) * 100).toFixed(2)
-                : '0.00',
-          },
-          montos: {
-            total_apostado: totalApostado.toFixed(2),
-            total_ganado: totalGanado.toFixed(2),
-            balance: balance.toFixed(2),
-            balance_positivo: balance >= 0,
-          },
-        };
-
-        const ultimosBoletos = await Boleto.findAll({
-          where: { jugador: jugador.id },
-          include: [{ model: Sorteo, as: 'sorteoDetalles', attributes: ['fecha', 'hora', 'numero_ganador', 'estado'] }],
-          order: [['creado', 'DESC']],
-          limit: 5,
-        });
-
-        perfilCompleto.ultimos_boletos = ultimosBoletos.map((boleto) => ({
-          id: boleto.id,
-          numero: boleto.numero_seleccionado,
-          monto_apostado: parseFloat(boleto.monto_apostado).toFixed(2),
-          estado: boleto.estado,
-          premio: boleto.monto_ganado ? parseFloat(boleto.monto_ganado).toFixed(2) : null,
-          sorteo: {
-            fecha: boleto.sorteoDetalles.fecha,
-            hora: boleto.sorteoDetalles.hora,
-            numero_ganador: boleto.sorteoDetalles.numero_ganador,
-          },
-          fecha_compra: boleto.fecha_compra,
-        }));
-
-        const ultimasTransacciones = await Transaccion.findAll({
-          where: { usuario: usuarioId },
-          order: [['creado', 'DESC']],
-          limit: 5,
-        });
-
-        perfilCompleto.ultimas_transacciones = ultimasTransacciones.map((t) => ({
-          id: t.id,
-          tipo: t.tipo,
-          concepto: t.concepto,
-          monto: parseFloat(t.monto).toFixed(2),
-          saldo_nuevo: parseFloat(t.saldo_nuevo).toFixed(2),
-          fecha: t.creado,
-        }));
-
-        const ultimoPremio = await Boleto.findOne({
-          where: { jugador: jugador.id, estado: 'Ganador' },
-          include: [{ model: Sorteo, as: 'sorteoDetalles', attributes: ['fecha', 'hora'] }],
-          order: [['actualizado', 'DESC']],
-        });
-
-        if (ultimoPremio) {
-          perfilCompleto.ultimo_premio = {
-            numero: ultimoPremio.numero_seleccionado,
-            monto: parseFloat(ultimoPremio.monto_ganado).toFixed(2),
-            fecha: ultimoPremio.sorteoDetalles.fecha,
-            hora: ultimoPremio.sorteoDetalles.hora,
-          };
-        }
-
-        const inicioMes = new Date();
-        inicioMes.setDate(1);
-        inicioMes.setHours(0, 0, 0, 0);
-
-        const [boletosEsteMes, premiosEsteMes] = await Promise.all([
-          Boleto.count({ where: { jugador: jugador.id, fecha_compra: { [Op.gte]: inicioMes } } }),
-          Boleto.count({ where: { jugador: jugador.id, estado: 'Ganador', actualizado: { [Op.gte]: inicioMes } } }),
-        ]);
-
-        perfilCompleto.actividad_mes = { boletos_comprados: boletosEsteMes, premios_ganados: premiosEsteMes };
-      }
-    }
-
-    response.status(200).json({ mensaje: 'Perfil obtenido exitosamente', ...perfilCompleto });
+    response.status(200).json({ mensaje: 'Perfil obtenido exitosamente', ...base, ...perfil });
   } catch (error) {
-    console.error('Error al obtener perfil:');
-    console.error(error);
+    console.error('Error al obtener perfil:', error);
     response.status(500).json({ mensaje: 'Error interno del servidor' });
   }
 };
