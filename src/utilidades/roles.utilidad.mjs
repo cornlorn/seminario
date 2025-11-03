@@ -1,7 +1,7 @@
 /**
  * Middleware genérico para verificar roles
  * Elimina código repetitivo en los middlewares de autenticación
- * 
+ *
  * @param {string[]} rolesPermitidos - Array de roles permitidos
  * @returns {Function} Middleware de Express
  */
@@ -10,14 +10,12 @@ export const verificarRoles = (rolesPermitidos) => {
     if (!request.usuario) {
       return response.status(401).json({ error: 'No autenticado' });
     }
-    
+
     if (!rolesPermitidos.includes(request.usuario.rol)) {
       const rolesTexto = rolesPermitidos.join(' o ');
-      return response.status(403).json({ 
-        error: `Acceso denegado. Se requiere rol de ${rolesTexto}` 
-      });
+      return response.status(403).json({ error: `Acceso denegado. Se requiere rol de ${rolesTexto}` });
     }
-    
+
     return next();
   };
 };

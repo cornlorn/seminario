@@ -3,7 +3,7 @@ import { opciones, transportador } from '../config/correo.config.mjs';
 /**
  * Utilidad genérica para enviar correos electrónicos
  * Reduce código repetitivo en los servicios de correo
- * 
+ *
  * @param {string} destinatario - Correo del destinatario
  * @param {string} asunto - Asunto del correo
  * @param {string} plantilla - HTML del correo
