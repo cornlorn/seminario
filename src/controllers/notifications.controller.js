@@ -1,15 +1,5 @@
-/**
- * Notifications controller
- * Handles user notifications (read, list, mark as read)
- */
-
-import { Op } from 'sequelize';
 import { Notificacion } from '../models/index.js';
 
-/**
- * Get user notifications
- * @route GET /usuarios/notificaciones
- */
 export const obtenerNotificaciones = async (request, response) => {
   try {
     const { id: usuarioId } = request.usuario;
@@ -50,10 +40,6 @@ export const obtenerNotificaciones = async (request, response) => {
   }
 };
 
-/**
- * Mark notification as read
- * @route PUT /usuarios/notificaciones/:id/leer
- */
 export const marcarComoLeida = async (request, response) => {
   try {
     const { id: usuarioId } = request.usuario;
@@ -79,29 +65,28 @@ export const marcarComoLeida = async (request, response) => {
   }
 };
 
-/**
- * Mark all notifications as read
- * @route PUT /usuarios/notificaciones/leer-todas
- */
 export const marcarTodasComoLeidas = async (request, response) => {
   try {
     const { id: usuarioId } = request.usuario;
 
     const [updated] = await Notificacion.update({ leida: true }, { where: { usuario: usuarioId, leida: false } });
 
+    const palabra = updated > 1 ? 'notificaciones' : 'notificación';
+    const pluralMarcada = updated > 1 ? 's' : '';
+    const pluralLeida = updated > 1 ? 's' : '';
+
     return response
       .status(200)
-      .json({ mensaje: `${updated} notificación(es) marcada(s) como leída(s)`, actualizadas: updated });
+      .json({
+        mensaje: `${updated} ${palabra} marcada${pluralMarcada} como leída${pluralLeida}`,
+        actualizadas: updated,
+      });
   } catch (error) {
     console.error('Error al marcar todas las notificaciones como leídas:', error.message);
     return response.status(500).json({ error: 'Error interno del servidor' });
   }
 };
 
-/**
- * Delete a notification
- * @route DELETE /usuarios/notificaciones/:id
- */
 export const eliminarNotificacion = async (request, response) => {
   try {
     const { id: usuarioId } = request.usuario;

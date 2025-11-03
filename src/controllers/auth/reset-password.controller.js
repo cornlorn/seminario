@@ -36,7 +36,7 @@ export const restablecer = async (request, response) => {
 
     return response.json({ mensaje: 'Contraseña restablecida exitosamente' });
   } catch (error) {
-    console.error('Error: No se pudo procesar la solicitud de restablecimiento de contraseña');
+    console.error('[ERROR] No se pudo procesar la solicitud de restablecimiento de contraseña');
     console.error(error);
     return response.status(500).json({ mensaje: 'Error interno del servidor' });
   }

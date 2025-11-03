@@ -1,17 +1,7 @@
-/**
- * Admin games and draws management controller
- * Handles CRUD operations for games, modalities, and draws
- */
-
 import { randomUUID } from 'crypto';
 import { Op } from 'sequelize';
-import { Juego, Modalidad, Sorteo, Boleto } from '../models/index.js';
-import { sequelize } from '../config/database.config.js';
+import { Boleto, Juego, Modalidad, Sorteo } from '../models/index.js';
 
-/**
- * List all games
- * @route GET /admin/juegos
- */
 export const listarJuegos = async (request, response) => {
   try {
     const { estado } = request.query;
@@ -31,15 +21,10 @@ export const listarJuegos = async (request, response) => {
   }
 };
 
-/**
- * Create a new game
- * @route POST /admin/juegos
- */
 export const crearJuego = async (request, response) => {
   try {
     const { nombre, descripcion } = request.body;
 
-    // Check if game already exists
     const juegoExistente = await Juego.findOne({ where: { nombre } });
     if (juegoExistente) {
       return response.status(409).json({ error: 'Ya existe un juego con ese nombre' });
@@ -54,10 +39,6 @@ export const crearJuego = async (request, response) => {
   }
 };
 
-/**
- * Update a game
- * @route PUT /admin/juegos/:id
- */
 export const actualizarJuego = async (request, response) => {
   try {
     const { id } = request.params;
@@ -88,10 +69,6 @@ export const actualizarJuego = async (request, response) => {
   }
 };
 
-/**
- * List all draws with filters
- * @route GET /admin/sorteos
- */
 export const listarSorteos = async (request, response) => {
   try {
     const { estado, fecha_desde, fecha_hasta, modalidad, limite = 100, pagina = 1 } = request.query;
@@ -133,10 +110,6 @@ export const listarSorteos = async (request, response) => {
   }
 };
 
-/**
- * Create a new draw
- * @route POST /admin/sorteos
- */
 export const crearSorteo = async (request, response) => {
   try {
     const { modalidad_id, fecha, hora } = request.body;
@@ -146,20 +119,17 @@ export const crearSorteo = async (request, response) => {
       return response.status(404).json({ error: 'Modalidad no encontrada' });
     }
 
-    // Check if draw already exists
     const sorteoExistente = await Sorteo.findOne({ where: { modalidad: modalidad_id, fecha, hora } });
 
     if (sorteoExistente) {
       return response.status(409).json({ error: 'Ya existe un sorteo para esta modalidad, fecha y hora' });
     }
 
-    // Build fecha_sorteo and fecha_cierre_compras
     const [horas, minutos] = hora.split(':');
     const fechaSorteo = new Date(`${fecha}T${hora}`);
     const fechaCierre = new Date(fechaSorteo);
     fechaCierre.setMinutes(fechaCierre.getMinutes() - 15);
 
-    // Determine estado based on current time
     const ahora = new Date();
     let estado = 'Pendiente';
     if (ahora >= fechaCierre && ahora < fechaSorteo) {
@@ -185,10 +155,6 @@ export const crearSorteo = async (request, response) => {
   }
 };
 
-/**
- * Update a draw
- * @route PUT /admin/sorteos/:id
- */
 export const actualizarSorteo = async (request, response) => {
   try {
     const { id } = request.params;
@@ -199,7 +165,6 @@ export const actualizarSorteo = async (request, response) => {
       return response.status(404).json({ error: 'Sorteo no encontrado' });
     }
 
-    // Validate estado transitions
     if (estado) {
       if (estado === 'Finalizado' && sorteo.estado === 'Finalizado') {
         return response.status(400).json({ error: 'El sorteo ya está finalizado' });
@@ -223,10 +188,6 @@ export const actualizarSorteo = async (request, response) => {
   }
 };
 
-/**
- * Cancel/Delete a draw (only if no tickets sold)
- * @route DELETE /admin/sorteos/:id
- */
 export const eliminarSorteo = async (request, response) => {
   try {
     const { id } = request.params;
@@ -236,7 +197,6 @@ export const eliminarSorteo = async (request, response) => {
       return response.status(404).json({ error: 'Sorteo no encontrado' });
     }
 
-    // Check if there are tickets sold
     const boletosVendidos = await Boleto.count({ where: { sorteo: id } });
     if (boletosVendidos > 0) {
       return response
@@ -253,10 +213,6 @@ export const eliminarSorteo = async (request, response) => {
   }
 };
 
-/**
- * Get draw statistics
- * @route GET /admin/sorteos/:id/estadisticas
- */
 export const obtenerEstadisticasSorteo = async (request, response) => {
   try {
     const { id } = request.params;
@@ -277,7 +233,6 @@ export const obtenerEstadisticasSorteo = async (request, response) => {
       distribución_numeros: {},
     };
 
-    // Count bets per number
     boletos.forEach((boleto) => {
       const num = boleto.numero.toString().padStart(2, '0');
       if (!estadisticas.distribución_numeros[num]) {

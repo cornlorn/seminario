@@ -27,8 +27,8 @@ export const ingresar = async (request, response) => {
 
     response.status(200).json({ mensaje: 'Inicio de sesión exitoso', token: token });
   } catch (error) {
-    console.error('Error: No se pudo iniciar sesión');
-    console.error(error.message);
+    console.error('[ERROR] No se pudo iniciar sesión');
+    console.error(error);
     response.status(500).json({ mensaje: 'Error interno del servidor' });
   }
 };

@@ -1,27 +1,9 @@
-/**
- * Base email template
- * Provides a consistent layout and styling for all email templates
- */
-
-/**
- * Escapes HTML special characters to prevent XSS
- * @param {string} text - Text to escape
- * @returns {string} - Escaped text
- */
 export const escapeHtml = (text = '') => {
   if (typeof text !== 'string') return '';
   const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
   return text.replace(/[&<>"']/g, (m) => map[m]);
 };
 
-/**
- * Base email template with consistent header, footer, and styling
- * @param {Object} options - Template options
- * @param {string} options.title - Email title (for <title> tag)
- * @param {string} options.content - HTML content to inject into the email body
- * @param {string} [options.preheader] - Optional preheader text
- * @returns {string} - Complete HTML email
- */
 export const baseEmailTemplate = ({ title, content, preheader = '' }) => {
   const appName = escapeHtml(process.env.APP_NAME || 'Lotería');
 

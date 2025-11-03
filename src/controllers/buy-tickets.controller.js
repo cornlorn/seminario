@@ -83,7 +83,6 @@ export const comprarBoletos = async (request, response) => {
           });
       }
 
-      // Determine padding based on game range
       const padLength = modalidad.rango_numero_max >= 100 ? 3 : 2;
       const numeroFormateado = numeroInt.toString().padStart(padLength, '0');
 

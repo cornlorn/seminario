@@ -1,6 +1,5 @@
 import { body, param, query } from 'express-validator';
 
-// Game validations
 export const validarCrearJuego = [
   body('nombre')
     .trim()
@@ -30,7 +29,6 @@ export const validarActualizarJuego = [
   body('estado').optional().isIn(['Activo', 'Inactivo']).withMessage('El estado debe ser "Activo" o "Inactivo"'),
 ];
 
-// Draw validations
 export const validarCrearSorteo = [
   body('modalidad_id').isString().withMessage('ID de modalidad inválido'),
   body('fecha')

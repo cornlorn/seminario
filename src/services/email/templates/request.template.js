@@ -1,10 +1,5 @@
 import { baseEmailTemplate, escapeHtml } from './base.template.js';
 
-/**
- * Password reset request email template
- * @param {string} codigo - Verification code
- * @returns {string} - HTML email
- */
 export const plantillaSolicitud = (codigo) => {
   const appName = escapeHtml(process.env.APP_NAME || 'Lotería');
   const codigoSeguro = escapeHtml(codigo);

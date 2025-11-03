@@ -1,10 +1,5 @@
 import { baseEmailTemplate, escapeHtml } from './base.template.js';
 
-/**
- * Registration email template
- * @param {string} nombre - User's name
- * @returns {string} - HTML email
- */
 export const plantillaRegistro = (nombre) => {
   const nombreSeguro = escapeHtml(nombre);
   const appName = escapeHtml(process.env.APP_NAME || 'Lotería');

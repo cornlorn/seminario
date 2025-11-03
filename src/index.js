@@ -3,16 +3,16 @@ import 'dotenv/config';
 import express from 'express';
 import morgan from 'morgan';
 import swaggerUI from 'swagger-ui-express';
-import { specs } from './config/swagger.config.js';
-import { transportador } from './config/email.config.js';
 import { sequelize } from './config/database.config.js';
+import { transportador } from './config/email.config.js';
+import { specs } from './config/swagger.config.js';
 import { errorHandler, notFoundHandler } from './middlewares/error-handler.middleware.js';
 import { rutas } from './routes/index.js';
 import { administrador } from './services/accounts/admin.service.js';
+import { iniciarSorteosAutomaticos } from './services/draws.service.js';
 import { iniciarEjecucionAutomatica } from './services/execute.service.js';
 import { inicializarDiaria } from './services/games/daily.service.js';
 import { inicializarJugaTres } from './services/games/play-three.service.js';
-import { iniciarSorteosAutomaticos } from './services/draws.service.js';
 
 const app = express();
 
@@ -27,7 +27,6 @@ app.use('/api', rutas);
 app.use('/api/docs', swaggerUI.serve, swaggerUI.setup(specs));
 app.use('/avatars', express.static('public/usuarios'));
 
-// Error handling middlewares (must be after routes)
 app.use(notFoundHandler);
 app.use(errorHandler);
 

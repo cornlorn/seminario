@@ -1,12 +1,5 @@
 import { ROLES } from '../constants/roles.constants.js';
 
-/**
- * Middleware genérico para verificar roles
- * Elimina código repetitivo en los middlewares de autenticación
- *
- * @param {string[]} rolesPermitidos - Array de roles permitidos
- * @returns {Function} Middleware de Express
- */
 export const verificarRoles = (rolesPermitidos) => {
   return (request, response, next) => {
     if (!request.usuario) {
@@ -22,7 +15,6 @@ export const verificarRoles = (rolesPermitidos) => {
   };
 };
 
-// Export convenience functions for common role checks
 export const esAdmin = verificarRoles([ROLES.ADMIN]);
 export const esVendedor = verificarRoles([ROLES.SELLER]);
 export const esJugador = verificarRoles([ROLES.PLAYER]);

@@ -39,15 +39,16 @@ export const cambiarContrasena = async (request, response) => {
       try {
         await correoCambioContrasena(usuario.correo);
       } catch (error) {
-        console.error('Error al enviar correo de cambio de contraseña:', error.message);
+        console.error('[ERROR] No se pudo enviar el correo de cambio de contraseña');
+        console.error(error);
       }
     });
 
-    console.log(`[Correo] Cambio de contraseña: ${usuario.correo}`);
+    console.log(`[CORREO] Cambio de contraseña: ${usuario.correo}`);
 
     response.status(200).json({ mensaje: 'Contraseña actualizada exitosamente' });
   } catch (error) {
-    console.error('Error: No se pudo cambiar la contraseña');
+    console.error('[ERROR] No se pudo cambiar la contraseña');
     console.error(error);
     response.status(500).json({ mensaje: 'Error interno del servidor' });
   }

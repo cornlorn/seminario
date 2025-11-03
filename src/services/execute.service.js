@@ -5,28 +5,16 @@ import { Billetera, Boleto, Jugador, Modalidad, Notificacion, Sorteo, Transaccio
 import { correoResultadoSorteo } from './email/draw-result.email.js';
 import { correoPremioGanado } from './email/prize-won.email.js';
 
-// Constants for Mixeá Tres special multiplier
-const MIXEA_TRES_REPEATED_DIGITS_MULTIPLIER = 200; // L1,000 / L5
+const MIXEA_TRES_REPEATED_DIGITS_MULTIPLIER = 200;
 const REQUIRED_DIGIT_COUNT = 2;
 const UNIQUE_DIGIT_TYPES = 2;
 
-/**
- * @param {number} min
- * @param {number} max
- * @returns {string}
- */
 const generarNumeroGanador = (min, max) => {
   const numero = Math.floor(Math.random() * (max - min + 1)) + min;
   const padLength = max >= 100 ? 3 : 2;
   return numero.toString().padStart(padLength, '0');
 };
 
-/**
- * Verifica si un número tiene exactamente dos dígitos repetidos
- * Ejemplos: 100, 232, 662 => true; 111, 123 => false
- * @param {string} numero
- * @returns {boolean}
- */
 const tieneDosDigitosRepetidos = (numero) => {
   if (numero.length !== 3) return false;
 
@@ -41,22 +29,10 @@ const tieneDosDigitosRepetidos = (numero) => {
   return valores.includes(REQUIRED_DIGIT_COUNT) && valores.length === UNIQUE_DIGIT_TYPES;
 };
 
-/**
- * Ordena los dígitos de un número
- * @param {string} numero
- * @returns {string}
- */
 const ordenarDigitos = (numero) => {
   return numero.split('').sort().join('');
 };
 
-/**
- * Determina si un boleto es ganador según la modalidad
- * @param {string} numeroSeleccionado
- * @param {string} numeroGanador
- * @param {string} nombreModalidad
- * @returns {boolean}
- */
 const esGanador = (numeroSeleccionado, numeroGanador, nombreModalidad) => {
   if (nombreModalidad === 'Mixeá Tres') {
     // Para Mixeá Tres, el número gana si los dígitos coinciden en cualquier orden
@@ -66,9 +42,6 @@ const esGanador = (numeroSeleccionado, numeroGanador, nombreModalidad) => {
   return numeroSeleccionado === numeroGanador;
 };
 
-/**
- * @param {string} sorteoId
- */
 export const ejecutarSorteo = async (sorteoId) => {
   const transaction = await sequelize.transaction();
 

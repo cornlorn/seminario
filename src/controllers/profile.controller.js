@@ -1,22 +1,9 @@
-/**
- * Controlador: miPerfil (versión completa con utilidades integradas)
- * Incluye perfiles de Administrador, Vendedor y Jugador con todas sus estadísticas.
- */
-
 import { Op } from 'sequelize';
 import { Administrador, Billetera, Boleto, Jugador, Sorteo, Transaccion, Usuario, Vendedor } from '../models/index.js';
-
-// =====================
-// 🔧 UTILIDADES GLOBALES
-// =====================
 
 export const formatoMonto = (valor) => parseFloat(valor || 0).toFixed(2);
 export const formatoFecha = (fecha) => new Date(fecha).toISOString();
 export const formatoHora = (fecha) => new Date(fecha).toTimeString().slice(0, 5);
-
-// =============================
-// 🧩 LÓGICA DE CADA TIPO DE PERFIL
-// =============================
 
 async function obtenerPerfilAdministrador(usuarioId) {
   const admin = await Administrador.findOne({ where: { usuario: usuarioId } });
@@ -150,7 +137,6 @@ async function obtenerPerfilJugador(usuarioId) {
 
   const balance = totalGanado - totalApostado;
 
-  // Últimos boletos y transacciones
   const [ultimosBoletos, ultimasTransacciones, ultimoPremio] = await Promise.all([
     Boleto.findAll({
       where: { jugador: jugador.id },
@@ -198,7 +184,6 @@ async function obtenerPerfilJugador(usuarioId) {
       }
     : null;
 
-  // Actividad mensual
   const inicioMes = new Date();
   inicioMes.setDate(1);
   inicioMes.setHours(0, 0, 0, 0);
@@ -238,10 +223,6 @@ async function obtenerPerfilJugador(usuarioId) {
     actividad_mes: { boletos_comprados: boletosEsteMes, premios_ganados: premiosEsteMes },
   };
 }
-
-// ===========================
-// 🚀 CONTROLADOR PRINCIPAL
-// ===========================
 
 export const miPerfil = async (request, response) => {
   try {

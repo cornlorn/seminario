@@ -1,14 +1,5 @@
-/**
- * Admin users management controller
- * Handles CRUD operations for user management by administrators
- */
+import { Administrador, Billetera, Jugador, Usuario, Vendedor } from '../models/index.js';
 
-import { Administrador, Jugador, Usuario, Vendedor, Billetera } from '../models/index.js';
-
-/**
- * List all users with filters
- * @route GET /admin/usuarios
- */
 export const listarUsuarios = async (request, response) => {
   try {
     const { rol, estado, limite = 50, pagina = 1 } = request.query;
@@ -45,10 +36,6 @@ export const listarUsuarios = async (request, response) => {
   }
 };
 
-/**
- * Get user details by ID
- * @route GET /admin/usuarios/:id
- */
 export const obtenerUsuario = async (request, response) => {
   try {
     const { id } = request.params;
@@ -59,7 +46,6 @@ export const obtenerUsuario = async (request, response) => {
       return response.status(404).json({ error: 'Usuario no encontrado' });
     }
 
-    // Get role-specific profile
     let perfil = null;
     if (usuario.rol === 'Administrador') {
       perfil = await Administrador.findOne({ where: { usuario: id } });
@@ -76,10 +62,6 @@ export const obtenerUsuario = async (request, response) => {
   }
 };
 
-/**
- * Update user status (activate/deactivate)
- * @route PUT /admin/usuarios/:id
- */
 export const actualizarUsuario = async (request, response) => {
   try {
     const { id } = request.params;
@@ -95,7 +77,6 @@ export const actualizarUsuario = async (request, response) => {
       return response.status(404).json({ error: 'Usuario no encontrado' });
     }
 
-    // Prevent admin from deactivating themselves
     if (usuario.id === request.usuario.id && estado === 'Inactivo') {
       return response.status(400).json({ error: 'No puedes desactivar tu propia cuenta' });
     }
@@ -115,10 +96,6 @@ export const actualizarUsuario = async (request, response) => {
   }
 };
 
-/**
- * Delete user (soft delete by changing estado to Inactivo)
- * @route DELETE /admin/usuarios/:id
- */
 export const eliminarUsuario = async (request, response) => {
   try {
     const { id } = request.params;
@@ -129,12 +106,10 @@ export const eliminarUsuario = async (request, response) => {
       return response.status(404).json({ error: 'Usuario no encontrado' });
     }
 
-    // Prevent admin from deleting themselves
     if (usuario.id === request.usuario.id) {
       return response.status(400).json({ error: 'No puedes eliminar tu propia cuenta' });
     }
 
-    // Soft delete - just set estado to Inactivo
     usuario.estado = 'Inactivo';
     await usuario.save();
 
@@ -145,10 +120,6 @@ export const eliminarUsuario = async (request, response) => {
   }
 };
 
-/**
- * List all sellers
- * @route GET /admin/vendedores
- */
 export const listarVendedores = async (request, response) => {
   try {
     const { limite = 50, pagina = 1 } = request.query;

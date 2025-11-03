@@ -33,7 +33,7 @@ export const solicitar = async (request, response) => {
 
     response.json({ mensaje: 'Si el correo existe, recibirás un código de recuperación' });
   } catch (error) {
-    console.error('Error: No se pudo procesar la solicitud de recuperación');
+    console.error('[ERROR] No se pudo procesar la solicitud de recuperación');
     console.error(error);
     response.status(500).send({ mensaje: 'Error interno del servidor' });
   }

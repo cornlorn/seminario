@@ -36,7 +36,6 @@ export const autenticar = async (request, response, next) => {
   }
 };
 
-// Usar utilidad de roles para eliminar código repetitivo
 export const verificarAdministrador = verificarRoles([ROLES.ADMIN]);
 export const verificarVendedor = verificarRoles([ROLES.SELLER]);
 export const verificarAdminOVendedor = verificarRoles([ROLES.ADMIN, ROLES.SELLER]);
