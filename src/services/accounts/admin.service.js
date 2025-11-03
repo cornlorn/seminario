@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { sequelize } from '../../config/database.config.js';
 import { ROLES } from '../../constants/roles.constants.js';
 import { Administrador, Usuario } from '../../models/index.js';
@@ -28,7 +29,7 @@ export const administrador = async () => {
     }
 
     await sequelize.transaction(async (transaccion) => {
-      const usuarioUUID = crypto.randomUUID();
+      const usuarioUUID = randomUUID();
 
       await Usuario.create(
         { id: usuarioUUID, correo: ADMIN_USER, contrasena: await hashearContrasena(ADMIN_PASS), rol: ROLES.ADMIN },
@@ -36,7 +37,7 @@ export const administrador = async () => {
       );
 
       await Administrador.create(
-        { id: crypto.randomUUID(), usuario: usuarioUUID, nombre: ADMIN_NAME },
+        { id: randomUUID(), usuario: usuarioUUID, nombre: ADMIN_NAME },
         { transaction: transaccion },
       );
     });

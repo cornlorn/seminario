@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import crypto from 'node:crypto';
 import { Token, Usuario } from '../../models/index.js';
 import { correoSolicitud } from '../../services/email/solicitud.js';
@@ -21,7 +22,7 @@ export const solicitar = async (request, response) => {
     expiracion.setMinutes(expiracion.getMinutes() + 15);
 
     await Token.create({
-      id: crypto.randomUUID(),
+      id: randomUUID(),
       usuario: usuario.id,
       tipo: 'Recuperacion',
       codigo: codigo,

@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { sequelize } from '../config/database.config.js';
 import { Billetera, Boleto, Jugador, Modalidad, Notificacion, Sorteo, Transaccion, Usuario } from '../models/index.js';
 import { correoCompraBoleto } from '../services/email/buy-ticket.email.js';
@@ -143,7 +144,7 @@ export const comprarBoletos = async (request, response) => {
     for (const boleto of boletosValidados) {
       const nuevoBoleto = await Boleto.create(
         {
-          id: crypto.randomUUID(),
+          id: randomUUID(),
           jugador: jugador.id,
           sorteo: sorteo_id,
           numero_seleccionado: boleto.numero,
@@ -168,7 +169,7 @@ export const comprarBoletos = async (request, response) => {
 
     await Transaccion.create(
       {
-        id: crypto.randomUUID(),
+        id: randomUUID(),
         usuario: usuarioId,
         tipo: 'Compra',
         concepto: concepto,
@@ -191,7 +192,7 @@ export const comprarBoletos = async (request, response) => {
 
     await Notificacion.create(
       {
-        id: crypto.randomUUID(),
+        id: randomUUID(),
         usuario: usuarioId,
         tipo: 'Compra',
         asunto: 'Compra de boletos confirmada',

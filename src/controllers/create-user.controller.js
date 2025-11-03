@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { sequelize } from '../config/database.config.js';
 import { ROLES, VALID_ROLES, isValidRole } from '../constants/roles.constants.js';
 import { Administrador, Billetera, Jugador, Usuario, Vendedor } from '../models/index.js';
@@ -49,7 +50,7 @@ export const crearUsuario = async (request, response) => {
     const contrasenaEncriptada = await hashearContrasena(contrasenaGenerada);
 
     const usuarioNuevo = await Usuario.create(
-      { id: crypto.randomUUID(), correo, contrasena: contrasenaEncriptada, rol },
+      { id: randomUUID(), correo, contrasena: contrasenaEncriptada, rol },
       { transaction },
     );
 
@@ -65,7 +66,7 @@ export const crearUsuario = async (request, response) => {
 
     if (rol === ROLES.ADMIN) {
       const adminNuevo = await Administrador.create(
-        { id: crypto.randomUUID(), usuario: usuarioNuevo.id, nombre },
+        { id: randomUUID(), usuario: usuarioNuevo.id, nombre },
         { transaction },
       );
 
@@ -82,7 +83,7 @@ export const crearUsuario = async (request, response) => {
 
       const vendedorNuevo = await Vendedor.create(
         {
-          id: crypto.randomUUID(),
+          id: randomUUID(),
           usuario: usuarioNuevo.id,
           nombre,
           apellido,
@@ -106,7 +107,7 @@ export const crearUsuario = async (request, response) => {
     if (rol === ROLES.PLAYER) {
       const jugadorNuevo = await Jugador.create(
         {
-          id: crypto.randomUUID(),
+          id: randomUUID(),
           usuario: usuarioNuevo.id,
           nombre,
           apellido,
@@ -124,7 +125,7 @@ export const crearUsuario = async (request, response) => {
       }
 
       const billeteraNueva = await Billetera.create(
-        { id: crypto.randomUUID(), jugador: jugadorNuevo.id, saldo: saldoInicial },
+        { id: randomUUID(), jugador: jugadorNuevo.id, saldo: saldoInicial },
         { transaction },
       );
 

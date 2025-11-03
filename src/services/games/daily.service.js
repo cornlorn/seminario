@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import crypto from 'crypto';
 import { sequelize } from '../../config/database.config.js';
 import { Juego, Modalidad } from '../../models/index.js';
@@ -10,7 +11,7 @@ export const inicializarDiaria = async () => {
       if (!juego) {
         juego = await Juego.create(
           {
-            id: crypto.randomUUID(),
+            id: randomUUID(),
             nombre: 'Diaria',
             descripcion: '¡Soñá y ganá todos los días con Diaria! Seleccioná tu número favorito del 00 al 99.',
             estado: 'Activo',
@@ -29,7 +30,7 @@ export const inicializarDiaria = async () => {
       if (!modalidad) {
         modalidad = await Modalidad.create(
           {
-            id: crypto.randomUUID(),
+            id: randomUUID(),
             juego: juego.id,
             nombre: 'Diaria Simple',
             precio_minimo: 5.0,

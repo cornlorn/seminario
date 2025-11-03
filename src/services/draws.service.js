@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { Op } from 'sequelize';
 import { Modalidad, Sorteo } from '../models/index.js';
 
@@ -54,7 +55,7 @@ export const crearSorteosAutomaticos = async (diasAdelante = 7) => {
             }
 
             const nuevoSorteo = await Sorteo.create({
-              id: crypto.randomUUID(),
+              id: randomUUID(),
               modalidad: modalidad.id,
               fecha: fechaStr,
               hora: hora,

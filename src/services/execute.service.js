@@ -1,15 +1,7 @@
+import { randomUUID } from 'crypto';
 import { Op } from 'sequelize';
 import { sequelize } from '../config/database.config.js';
-import {
-  Billetera,
-  Boleto,
-  Jugador,
-  Modalidad,
-  Notificacion,
-  Sorteo,
-  Transaccion,
-  Usuario,
-} from '../models/index.js';
+import { Billetera, Boleto, Jugador, Modalidad, Notificacion, Sorteo, Transaccion, Usuario } from '../models/index.js';
 import { correoResultadoSorteo } from './email/draw-result.email.js';
 import { correoPremioGanado } from './email/prize-won.email.js';
 
@@ -156,7 +148,7 @@ export const ejecutarSorteo = async (sorteoId) => {
 
       await Transaccion.create(
         {
-          id: crypto.randomUUID(),
+          id: randomUUID(),
           usuario: boleto.jugadorDetalles.usuario,
           tipo: 'Premio',
           concepto: `Premio del sorteo ${sorteo.fecha} ${sorteo.hora}`,
@@ -176,7 +168,7 @@ export const ejecutarSorteo = async (sorteoId) => {
 
       await Notificacion.create(
         {
-          id: crypto.randomUUID(),
+          id: randomUUID(),
           usuario: boleto.jugadorDetalles.usuario,
           tipo: 'Premio',
           asunto: '¡Felicidades! Has ganado un premio',

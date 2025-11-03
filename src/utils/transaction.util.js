@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { formatearMoneda, validarMonto } from './response.util.js';
 
 /**
@@ -37,17 +38,7 @@ export const validarMontoConLimites = (monto, limites = {}) => {
 export const crearDatosNotificacion = (datos) => {
   const { usuario, tipo = 'Sistema', asunto, mensaje, referencia, metadata = {} } = datos;
 
-  return {
-    id: crypto.randomUUID(),
-    usuario,
-    tipo,
-    asunto,
-    mensaje,
-    leida: false,
-    enviada: false,
-    referencia,
-    metadata,
-  };
+  return { id: randomUUID(), usuario, tipo, asunto, mensaje, leida: false, enviada: false, referencia, metadata };
 };
 
 /**
@@ -60,7 +51,7 @@ export const crearDatosTransaccion = (datos) => {
   const { usuario, tipo, concepto, monto, saldoAnterior, saldoNuevo, vendedor, metadata = {} } = datos;
 
   return {
-    id: crypto.randomUUID(),
+    id: randomUUID(),
     usuario,
     tipo,
     concepto,

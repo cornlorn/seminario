@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { sequelize } from '../../config/database.config.js';
 import { ROLES } from '../../constants/roles.constants.js';
 import { Billetera, Jugador, Usuario } from '../../models/index.js';
@@ -20,8 +21,8 @@ export const registrar = async (request, response) => {
     }
 
     await sequelize.transaction(async (transaccion) => {
-      const usuarioUUID = crypto.randomUUID();
-      const jugadorUUID = crypto.randomUUID();
+      const usuarioUUID = randomUUID();
+      const jugadorUUID = randomUUID();
 
       await Usuario.create(
         { id: usuarioUUID, correo: correo, contrasena: await hashearContrasena(contrasena), rol: ROLES.PLAYER },
@@ -40,10 +41,7 @@ export const registrar = async (request, response) => {
         { transaction: transaccion },
       );
 
-      await Billetera.create(
-        { id: crypto.randomUUID(), jugador: jugadorUUID, saldo: 0.0 },
-        { transaction: transaccion },
-      );
+      await Billetera.create({ id: randomUUID(), jugador: jugadorUUID, saldo: 0.0 }, { transaction: transaccion });
     });
 
     await correoRegistro(correo, nombre);

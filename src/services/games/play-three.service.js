@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import crypto from 'crypto';
 import { sequelize } from '../../config/database.config.js';
 import { Juego, Modalidad } from '../../models/index.js';
@@ -10,7 +11,7 @@ export const inicializarJugaTres = async () => {
       if (!juego) {
         juego = await Juego.create(
           {
-            id: crypto.randomUUID(),
+            id: randomUUID(),
             nombre: 'Jugá Tres',
             descripcion:
               'Con Jugá Tres podés ganar mucho más hasta L3,000 por cada L5 en los tres sorteos diarios de las 11:00 a.m., 3:00 p.m. y 9:00 p.m.',
@@ -31,7 +32,7 @@ export const inicializarJugaTres = async () => {
       if (!modalidadOrdenaTres) {
         modalidadOrdenaTres = await Modalidad.create(
           {
-            id: crypto.randomUUID(),
+            id: randomUUID(),
             juego: juego.id,
             nombre: 'Ordená Tres',
             precio_minimo: 5.0,
@@ -56,7 +57,7 @@ export const inicializarJugaTres = async () => {
       if (!modalidadMixeaTres) {
         modalidadMixeaTres = await Modalidad.create(
           {
-            id: crypto.randomUUID(),
+            id: randomUUID(),
             juego: juego.id,
             nombre: 'Mixeá Tres',
             precio_minimo: 5.0,
