@@ -23,7 +23,7 @@ app.use(morgan('dev'));
 
 app.use('/api', rutas);
 app.use('/api/docs', swaggerUI.serve, swaggerUI.setup(specs));
-app.use('/avatars', express.static('public'));
+app.use('/avatars', express.static('public/usuarios'));
 
 try {
   await sequelize.authenticate();

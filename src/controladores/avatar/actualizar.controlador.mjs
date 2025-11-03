@@ -1,17 +1,13 @@
 import fs from 'node:fs/promises';
 import { Jugador } from '../../modelos/index.mjs';
 
-/**
- * @param {import("express").Request} request
- * @param {import("express").Response} response
- */
 export const actualizar = async (request, response) => {
   try {
     if (!request.file) {
       return response.status(400).json({ error: 'No se proporcionó ningún archivo' });
     }
 
-    const avatarPath = `/usuarios/${request.usuario.id}/${request.file.filename}`;
+    const avatarPath = `/${request.usuario.id}/${request.file.filename}`;
 
     await Jugador.update({ avatar: avatarPath }, { where: { usuario: request.usuario.id } });
 
