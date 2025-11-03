@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { sequelize } from '../../config/database.config.mjs';
 import { Juego, Modalidad } from '../../modelos/index.mjs';
 

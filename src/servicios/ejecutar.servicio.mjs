@@ -13,6 +13,11 @@ import {
 import { correoResultadoSorteo } from './correo/resultado-sorteo.correo.mjs';
 import { correoPremioGanado } from './correo/premio-ganado.correo.mjs';
 
+// Constants for Mixeá Tres special multiplier
+const MIXEA_TRES_REPEATED_DIGITS_MULTIPLIER = 200; // L1,000 / L5
+const REQUIRED_DIGIT_COUNT = 2;
+const UNIQUE_DIGIT_TYPES = 2;
+
 /**
  * @param {number} min
  * @param {number} max
@@ -41,7 +46,7 @@ const tieneDosDigitosRepetidos = (numero) => {
   }
 
   const valores = Object.values(contador);
-  return valores.includes(2) && valores.length === 2;
+  return valores.includes(REQUIRED_DIGIT_COUNT) && valores.length === UNIQUE_DIGIT_TYPES;
 };
 
 /**
@@ -136,7 +141,7 @@ export const ejecutarSorteo = async (sorteoId) => {
 
       // Para Mixeá Tres, si el número tiene dos dígitos repetidos, duplicar el premio
       if (modalidad.nombre === 'Mixeá Tres' && tieneDosDigitosRepetidos(boleto.numero_seleccionado)) {
-        multiplicadorPremio = 200; // L1,000 / L5 = 200x
+        multiplicadorPremio = MIXEA_TRES_REPEATED_DIGITS_MULTIPLIER;
       }
 
       const montoGanado = boleto.monto_apostado * multiplicadorPremio;
