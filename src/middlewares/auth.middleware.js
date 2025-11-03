@@ -11,7 +11,7 @@ export const autenticar = async (request, response, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const usuario = await Usuario.findByPk(decoded.id, { attributes: { exclude: ['password'] } });
+    const usuario = await Usuario.findByPk(decoded.id, { attributes: { exclude: ['contrasena'] } });
 
     if (!usuario) {
       return response.status(401).json({ error: 'Usuario no encontrado' });

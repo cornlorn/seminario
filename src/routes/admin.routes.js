@@ -1,8 +1,20 @@
 import { Router } from 'express';
 import { crearUsuario } from '../controllers/create-user.controller.js';
+import {
+  listarUsuarios,
+  obtenerUsuario,
+  actualizarUsuario,
+  eliminarUsuario,
+  listarVendedores,
+} from '../controllers/admin-users.controller.js';
 import { autenticar, verificarAdministrador } from '../middlewares/auth.middleware.js';
 import { validar } from '../middlewares/validation.middleware.js';
 import { validarCrearUsuario } from '../validations/create-user.validation.js';
+import {
+  validarActualizarUsuario,
+  validarIdUsuario,
+  validarListarUsuarios,
+} from '../validations/admin-users.validation.js';
 
 const router = Router();
 
@@ -101,5 +113,197 @@ const router = Router();
  *         description: Error interno del servidor
  */
 router.post('/usuarios/crear', autenticar, verificarAdministrador, validarCrearUsuario, validar, crearUsuario);
+
+/**
+ * @swagger
+ * /admin/usuarios:
+ *   get:
+ *     summary: Lista todos los usuarios del sistema
+ *     description: Obtiene la lista completa de usuarios con opciones de filtrado y paginación
+ *     tags:
+ *       - Administración
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: rol
+ *         schema:
+ *           type: string
+ *           enum: [Administrador, Vendedor, Jugador]
+ *         description: Filtrar por rol
+ *       - in: query
+ *         name: estado
+ *         schema:
+ *           type: string
+ *           enum: [Activo, Inactivo]
+ *         description: Filtrar por estado
+ *       - in: query
+ *         name: limite
+ *         schema:
+ *           type: integer
+ *           default: 50
+ *         description: Cantidad de resultados por página
+ *       - in: query
+ *         name: pagina
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Número de página
+ *     responses:
+ *       200:
+ *         description: Lista de usuarios obtenida exitosamente
+ *       401:
+ *         description: Token no proporcionado o inválido
+ *       403:
+ *         description: Acceso denegado (no es administrador)
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get('/usuarios', autenticar, verificarAdministrador, validarListarUsuarios, validar, listarUsuarios);
+
+/**
+ * @swagger
+ * /admin/usuarios/{id}:
+ *   get:
+ *     summary: Obtiene los detalles de un usuario específico
+ *     description: Retorna información completa del usuario incluyendo su perfil según rol
+ *     tags:
+ *       - Administración
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del usuario
+ *     responses:
+ *       200:
+ *         description: Usuario obtenido exitosamente
+ *       401:
+ *         description: Token no proporcionado o inválido
+ *       403:
+ *         description: Acceso denegado (no es administrador)
+ *       404:
+ *         description: Usuario no encontrado
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get('/usuarios/:id', autenticar, verificarAdministrador, validarIdUsuario, validar, obtenerUsuario);
+
+/**
+ * @swagger
+ * /admin/usuarios/{id}:
+ *   put:
+ *     summary: Actualiza el estado de un usuario
+ *     description: Permite activar o desactivar una cuenta de usuario
+ *     tags:
+ *       - Administración
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del usuario
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - estado
+ *             properties:
+ *               estado:
+ *                 type: string
+ *                 enum: [Activo, Inactivo]
+ *                 description: Nuevo estado del usuario
+ *     responses:
+ *       200:
+ *         description: Usuario actualizado exitosamente
+ *       400:
+ *         description: Error de validación o intento de desactivar cuenta propia
+ *       401:
+ *         description: Token no proporcionado o inválido
+ *       403:
+ *         description: Acceso denegado (no es administrador)
+ *       404:
+ *         description: Usuario no encontrado
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.put('/usuarios/:id', autenticar, verificarAdministrador, validarActualizarUsuario, validar, actualizarUsuario);
+
+/**
+ * @swagger
+ * /admin/usuarios/{id}:
+ *   delete:
+ *     summary: Desactiva una cuenta de usuario
+ *     description: Realiza un soft delete del usuario cambiando su estado a Inactivo
+ *     tags:
+ *       - Administración
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del usuario
+ *     responses:
+ *       200:
+ *         description: Usuario desactivado exitosamente
+ *       400:
+ *         description: Intento de eliminar cuenta propia
+ *       401:
+ *         description: Token no proporcionado o inválido
+ *       403:
+ *         description: Acceso denegado (no es administrador)
+ *       404:
+ *         description: Usuario no encontrado
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.delete('/usuarios/:id', autenticar, verificarAdministrador, validarIdUsuario, validar, eliminarUsuario);
+
+/**
+ * @swagger
+ * /admin/vendedores:
+ *   get:
+ *     summary: Lista todos los vendedores del sistema
+ *     description: Obtiene la lista completa de vendedores con sus estadísticas
+ *     tags:
+ *       - Administración
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: limite
+ *         schema:
+ *           type: integer
+ *           default: 50
+ *         description: Cantidad de resultados por página
+ *       - in: query
+ *         name: pagina
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Número de página
+ *     responses:
+ *       200:
+ *         description: Lista de vendedores obtenida exitosamente
+ *       401:
+ *         description: Token no proporcionado o inválido
+ *       403:
+ *         description: Acceso denegado (no es administrador)
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get('/vendedores', autenticar, verificarAdministrador, listarVendedores);
 
 export { router as rutasAdmin };

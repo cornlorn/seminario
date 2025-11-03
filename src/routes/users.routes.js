@@ -6,6 +6,12 @@ import { restablecer } from '../controllers/auth/reset-password.controller.js';
 import { solicitar } from '../controllers/auth/request-reset.controller.js';
 import { actualizar } from '../controllers/avatar/update.controller.js';
 import { eliminar } from '../controllers/avatar/delete.controller.js';
+import {
+  obtenerNotificaciones,
+  marcarComoLeida,
+  marcarTodasComoLeidas,
+  eliminarNotificacion,
+} from '../controllers/notifications.controller.js';
 import { miPerfil } from '../controllers/profile.controller.js';
 import { autenticar } from '../middlewares/auth.middleware.js';
 import { manejarErroresMulter, subirAvatar } from '../middlewares/multer.middleware.js';
@@ -342,5 +348,127 @@ router.put('/avatar', autenticar, subirAvatar, manejarErroresMulter, actualizar)
  *         description: Error al eliminar el avatar
  */
 router.delete('/avatar', autenticar, eliminar);
+
+/**
+ * @swagger
+ * /usuarios/notificaciones:
+ *   get:
+ *     summary: Obtiene las notificaciones del usuario autenticado
+ *     description: Lista todas las notificaciones del usuario con paginación y filtros
+ *     tags:
+ *       - Notificaciones
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: tipo
+ *         schema:
+ *           type: string
+ *           enum: [Compra, Resultado, Premio, Sistema]
+ *         description: Filtrar por tipo de notificación
+ *       - in: query
+ *         name: leida
+ *         schema:
+ *           type: boolean
+ *         description: Filtrar por estado de lectura
+ *       - in: query
+ *         name: limite
+ *         schema:
+ *           type: integer
+ *           default: 50
+ *         description: Cantidad de resultados por página
+ *       - in: query
+ *         name: pagina
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Número de página
+ *     responses:
+ *       200:
+ *         description: Notificaciones obtenidas exitosamente
+ *       401:
+ *         description: Token no proporcionado o inválido
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get('/notificaciones', autenticar, obtenerNotificaciones);
+
+/**
+ * @swagger
+ * /usuarios/notificaciones/leer-todas:
+ *   put:
+ *     summary: Marca todas las notificaciones como leídas
+ *     description: Actualiza todas las notificaciones no leídas del usuario como leídas
+ *     tags:
+ *       - Notificaciones
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Notificaciones actualizadas exitosamente
+ *       401:
+ *         description: Token no proporcionado o inválido
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.put('/notificaciones/leer-todas', autenticar, marcarTodasComoLeidas);
+
+/**
+ * @swagger
+ * /usuarios/notificaciones/{id}/leer:
+ *   put:
+ *     summary: Marca una notificación como leída
+ *     description: Actualiza el estado de una notificación específica a leída
+ *     tags:
+ *       - Notificaciones
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID de la notificación
+ *     responses:
+ *       200:
+ *         description: Notificación marcada como leída
+ *       401:
+ *         description: Token no proporcionado o inválido
+ *       404:
+ *         description: Notificación no encontrada
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.put('/notificaciones/:id/leer', autenticar, marcarComoLeida);
+
+/**
+ * @swagger
+ * /usuarios/notificaciones/{id}:
+ *   delete:
+ *     summary: Elimina una notificación
+ *     description: Elimina permanentemente una notificación del usuario
+ *     tags:
+ *       - Notificaciones
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID de la notificación
+ *     responses:
+ *       200:
+ *         description: Notificación eliminada exitosamente
+ *       401:
+ *         description: Token no proporcionado o inválido
+ *       404:
+ *         description: Notificación no encontrada
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.delete('/notificaciones/:id', autenticar, eliminarNotificacion);
 
 export { router as rutasUsuarios };
