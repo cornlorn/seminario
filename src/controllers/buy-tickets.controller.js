@@ -1,14 +1,5 @@
 import { sequelize } from '../config/database.config.js';
-import {
-  Billetera,
-  Boleto,
-  Jugador,
-  Modalidad,
-  Notificacion,
-  Sorteo,
-  Transaccion,
-  Usuario,
-} from '../models/index.js';
+import { Billetera, Boleto, Jugador, Modalidad, Notificacion, Sorteo, Transaccion, Usuario } from '../models/index.js';
 import { correoCompraBoleto } from '../services/email/buy-ticket.email.js';
 
 const MAX_BOLETOS_POR_COMPRA = 10;

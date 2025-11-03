@@ -20,11 +20,9 @@ export const errorHandler = (error, request, response, next) => {
   const message = error.message || 'Error interno del servidor';
 
   // Send error response
-  response.status(statusCode).json({
-    error: true,
-    mensaje: message,
-    ...(process.env.NODE_ENV === 'development' && { stack: error.stack }),
-  });
+  response
+    .status(statusCode)
+    .json({ error: true, mensaje: message, ...(process.env.NODE_ENV === 'development' && { stack: error.stack }) });
 };
 
 /**
@@ -33,10 +31,7 @@ export const errorHandler = (error, request, response, next) => {
  * @param {import("express").Response} response - Express response object
  */
 export const notFoundHandler = (request, response) => {
-  response.status(404).json({
-    error: true,
-    mensaje: `Ruta no encontrada: ${request.method} ${request.url}`,
-  });
+  response.status(404).json({ error: true, mensaje: `Ruta no encontrada: ${request.method} ${request.url}` });
 };
 
 /**

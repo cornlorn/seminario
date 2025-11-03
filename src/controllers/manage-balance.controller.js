@@ -3,11 +3,7 @@ import { Billetera, Jugador, Notificacion, Transaccion, Usuario, Vendedor } from
 import { correoDepositoSaldo } from '../services/email/deposit-balance.email.js';
 import { correoRetiroSaldo } from '../services/email/withdraw-balance.email.js';
 import { formatearMoneda } from '../utils/response.util.js';
-import {
-  crearDatosNotificacion,
-  crearDatosTransaccion,
-  validarMontoConLimites,
-} from '../utils/transaction.util.js';
+import { crearDatosNotificacion, crearDatosTransaccion, validarMontoConLimites } from '../utils/transaction.util.js';
 
 export const MONTOS_PREDETERMINADOS = [25, 50, 100, 200, 500, 1000];
 

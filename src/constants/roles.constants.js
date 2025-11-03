@@ -2,11 +2,7 @@
  * User roles constants
  * Define all valid user roles in the system
  */
-export const ROLES = {
-  ADMIN: 'Administrador',
-  SELLER: 'Vendedor',
-  PLAYER: 'Jugador',
-};
+export const ROLES = { ADMIN: 'Administrador', SELLER: 'Vendedor', PLAYER: 'Jugador' };
 
 /**
  * Array of all valid roles

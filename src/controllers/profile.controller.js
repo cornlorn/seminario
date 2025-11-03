@@ -4,16 +4,7 @@
  */
 
 import { Op } from 'sequelize';
-import {
-  Administrador,
-  Billetera,
-  Boleto,
-  Jugador,
-  Sorteo,
-  Transaccion,
-  Usuario,
-  Vendedor,
-} from '../models/index.js';
+import { Administrador, Billetera, Boleto, Jugador, Sorteo, Transaccion, Usuario, Vendedor } from '../models/index.js';
 
 // =====================
 // 🔧 UTILIDADES GLOBALES

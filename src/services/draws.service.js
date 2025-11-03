@@ -10,10 +10,7 @@ export const crearSorteosAutomaticos = async (diasAdelante = 7) => {
   try {
     // Obtener todas las modalidades activas para crear sorteos
     const modalidades = await Modalidad.findAll({
-      where: {
-        estado: 'Activo',
-        nombre: { [Op.in]: ['Diaria Simple', 'Ordená Tres', 'Mixeá Tres'] },
-      },
+      where: { estado: 'Activo', nombre: { [Op.in]: ['Diaria Simple', 'Ordená Tres', 'Mixeá Tres'] } },
     });
 
     if (modalidades.length === 0) {

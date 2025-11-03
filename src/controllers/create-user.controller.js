@@ -16,9 +16,7 @@ export const crearUsuario = async (request, response) => {
   try {
     if (!isValidRole(rol)) {
       await transaction.rollback();
-      return response.status(400).json({ 
-        mensaje: `Rol inválido. Debe ser ${VALID_ROLES.join(', ')}` 
-      });
+      return response.status(400).json({ mensaje: `Rol inválido. Debe ser ${VALID_ROLES.join(', ')}` });
     }
 
     const usuarioExistente = await Usuario.findOne({ where: { correo }, transaction });
