@@ -1,8 +1,8 @@
-import bcrypt from 'bcrypt';
 import { Op } from 'sequelize';
 import { Token } from '../../modelos/index.mjs';
 import { Usuario } from '../../modelos/index.mjs';
 import { correoRestablecimiento } from '../../servicios/correo/restablecimiento.mjs';
+import { hashearContrasena } from '../../utilidades/contrasena.utilidad.mjs';
 
 /**
  * @param {import("express").Request} request
@@ -25,7 +25,7 @@ export const restablecer = async (request, response) => {
       return response.status(400).json({ mensaje: 'Usuario asociado no encontrado' });
     }
 
-    usuario.contrasena = await bcrypt.hash(contrasena, 10);
+    usuario.contrasena = await hashearContrasena(contrasena);
     await usuario.save();
 
     await token.destroy().catch(() => {});

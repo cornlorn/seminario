@@ -1,7 +1,7 @@
-import bcrypt from 'bcrypt';
 import { sequelize } from '../../config/database.config.mjs';
 import { Billetera, Jugador, Usuario } from '../../modelos/index.mjs';
 import { correoRegistro } from '../../servicios/correo/registro.mjs';
+import { hashearContrasena } from '../../utilidades/contrasena.utilidad.mjs';
 
 /**
  * @param {import("express").Request} request
@@ -23,7 +23,7 @@ export const registrar = async (request, response) => {
       const jugadorUUID = crypto.randomUUID();
 
       await Usuario.create(
-        { id: usuarioUUID, correo: correo, contrasena: await bcrypt.hash(contrasena, 10), rol: 'Jugador' },
+        { id: usuarioUUID, correo: correo, contrasena: await hashearContrasena(contrasena), rol: 'Jugador' },
         { transaction: transaccion },
       );
 

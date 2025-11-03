@@ -1,6 +1,6 @@
-import bcrypt from 'bcrypt';
 import { Usuario } from '../../modelos/index.mjs';
 import { correoCambioContrasena } from '../../servicios/correo/cambio-contrasena.correo.mjs';
+import { compararContrasena, hashearContrasena } from '../../utilidades/contrasena.utilidad.mjs';
 
 /**
  * @param {import("express").Request} request
@@ -19,19 +19,19 @@ export const cambiarContrasena = async (request, response) => {
 
     console.log(usuario);
 
-    const contrasenaValida = await bcrypt.compare(contrasena_actual, usuario.contrasena);
+    const contrasenaValida = await compararContrasena(contrasena_actual, usuario.contrasena);
 
     if (!contrasenaValida) {
       return response.status(401).json({ mensaje: 'La contraseña actual es incorrecta' });
     }
 
-    const mismaNueva = await bcrypt.compare(contrasena_nueva, usuario.contrasena);
+    const mismaNueva = await compararContrasena(contrasena_nueva, usuario.contrasena);
 
     if (mismaNueva) {
       return response.status(400).json({ mensaje: 'La nueva contraseña debe ser diferente a la actual' });
     }
 
-    const contrasenaEncriptada = await bcrypt.hash(contrasena_nueva, 10);
+    const contrasenaEncriptada = await hashearContrasena(contrasena_nueva);
 
     await usuario.update({ contrasena: contrasenaEncriptada });
 
