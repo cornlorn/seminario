@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto';
 import crypto from 'node:crypto';
 import { Token, Usuario } from '../../models/index.js';
-import { correoSolicitud } from '../../services/email/solicitud.js';
+import { correoSolicitud } from '../../services/email/request.email.js';
 
 /**
  * @param {import("express").Request} request

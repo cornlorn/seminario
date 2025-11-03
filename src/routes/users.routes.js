@@ -49,7 +49,7 @@ const router = Router();
  *               contrasena:
  *                 type: string
  *                 format: password
- *                 example: Contasena2025
+ *                 example: Contrasena2025
  *               nombre:
  *                 type: string
  *                 example: Andrea
@@ -102,7 +102,7 @@ router.post('/registrar', validarRegistro, validar, registrar);
  *               contrasena:
  *                 type: string
  *                 format: password
- *                 example: Contasena2025
+ *                 example: Contrasena2025
  *     responses:
  *       200:
  *         description: Inicio de sesión exitoso, devuelve un token JWT

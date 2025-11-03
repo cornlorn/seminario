@@ -1,7 +1,7 @@
 import { Op } from 'sequelize';
 import { Token } from '../../models/index.js';
 import { Usuario } from '../../models/index.js';
-import { correoRestablecimiento } from '../../services/email/restablecimiento.js';
+import { correoRestablecimiento } from '../../services/email/reset-password.email.js';
 import { hashearContrasena } from '../../utils/password.util.js';
 
 /**

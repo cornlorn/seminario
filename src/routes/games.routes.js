@@ -10,7 +10,7 @@ const router = Router();
 
 /**
  * @swagger
- * /games/sorteos:
+ * /juegos/sorteos:
  *   get:
  *     summary: Lista los sorteos disponibles para comprar boletos
  *     description: Retorna todos los sorteos en estado "Abierto" que aún aceptan compras, ordenados por fecha
@@ -26,7 +26,7 @@ router.get('/sorteos', listarSorteosDisponibles);
 
 /**
  * @swagger
- * /games/sorteos/{id}:
+ * /juegos/sorteos/{id}:
  *   get:
  *     summary: Obtiene los detalles de un sorteo específico
  *     description: Retorna información detallada de un sorteo, incluyendo estadísticas y número ganador si ya fue sorteado
@@ -52,7 +52,7 @@ router.get('/sorteos/:id', obtenerSorteo);
 
 /**
  * @swagger
- * /games/boletos/comprar:
+ * /juegos/boletos/comprar:
  *   post:
  *     summary: Compra boletos para un sorteo
  *     description: Permite al jugador comprar entre 1 y 10 boletos para un sorteo específico. Se valida el saldo, los límites y se procesan las transacciones
@@ -117,7 +117,7 @@ router.post('/boletos/comprar', autenticar, validarCompraBoletos, validar, compr
 
 /**
  * @swagger
- * /games/boletos/mis-boletos:
+ * /juegos/boletos/mis-boletos:
  *   get:
  *     summary: Obtiene el historial de boletos del usuario
  *     description: Lista todos los boletos comprados por el usuario autenticado, con opción de filtrar por estado
@@ -158,7 +158,7 @@ router.get('/boletos/mis-boletos', autenticar, misBoletos);
 
 /**
  * @swagger
- * /games/transacciones:
+ * /juegos/transacciones:
  *   get:
  *     summary: Obtiene el historial de transacciones del usuario
  *     description: Lista todas las transacciones del usuario autenticado (compras, premios, depósitos, retiros)
@@ -197,7 +197,7 @@ router.get('/transacciones', autenticar, misTransacciones);
 
 /**
  * @swagger
- * /games/estadisticas:
+ * /juegos/estadisticas:
  *   get:
  *     summary: Obtiene estadísticas generales del usuario
  *     description: Retorna un resumen con total de boletos, montos apostados/ganados, tasa de victoria y último premio
