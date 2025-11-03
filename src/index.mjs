@@ -10,6 +10,7 @@ import { rutas } from './rutas/index.mjs';
 import { administrador } from './servicios/cuentas/administrador.mjs';
 import { iniciarEjecucionAutomatica } from './servicios/ejecutar.servicio.mjs';
 import { inicializarDiaria } from './servicios/juegos/diaria.servicio.mjs';
+import { inicializarJugaTres } from './servicios/juegos/jugaTres.servicio.mjs';
 import { iniciarSorteosAutomaticos } from './servicios/sorteos.servicio.mjs';
 
 const app = express();
@@ -30,6 +31,7 @@ try {
   await sequelize.sync({ alter: true });
   await administrador();
   await inicializarDiaria();
+  await inicializarJugaTres();
   await transportador.verify();
 
   iniciarSorteosAutomaticos();

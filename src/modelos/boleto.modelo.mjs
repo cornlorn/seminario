@@ -20,9 +20,9 @@ export const Boleto = sequelize.define(
       onUpdate: 'CASCADE',
     },
     numero_seleccionado: {
-      type: DataTypes.STRING(2),
+      type: DataTypes.STRING(3),
       allowNull: false,
-      comment: 'Número elegido por el jugador (00-99)',
+      comment: 'Número elegido por el jugador (00-99 para Diaria, 000-999 para Jugá Tres)',
     },
     monto_apostado: { type: DataTypes.DECIMAL(10, 2), allowNull: false, comment: 'Monto apostado en este boleto' },
     monto_ganado: {
