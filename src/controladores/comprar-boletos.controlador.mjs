@@ -91,7 +91,9 @@ export const comprarBoletos = async (request, response) => {
           });
       }
 
-      const numeroFormateado = numeroInt.toString().padStart(2, '0');
+      // Determine padding based on game range
+      const padLength = modalidad.rango_numero_max >= 100 ? 3 : 2;
+      const numeroFormateado = numeroInt.toString().padStart(padLength, '0');
 
       const montoFloat = parseFloat(monto);
       if (montoFloat < parseFloat(modalidad.precio_minimo)) {
