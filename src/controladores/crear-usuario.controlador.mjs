@@ -1,30 +1,7 @@
-import bcrypt from 'bcrypt';
 import { sequelize } from '../config/database.config.mjs';
 import { Administrador, Billetera, Jugador, Usuario, Vendedor } from '../modelos/index.mjs';
 import { correoCredencialesNuevaCuenta } from '../servicios/correo/credenciales-cuenta.correo.mjs';
-
-const generarContrasena = () => {
-  const mayusculas = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const minusculas = 'abcdefghijklmnopqrstuvwxyz';
-  const numeros = '0123456789';
-  const especiales = '!@#$%&*';
-  const todos = mayusculas + minusculas + numeros + especiales;
-
-  let contrasena = '';
-  contrasena += mayusculas[Math.floor(Math.random() * mayusculas.length)];
-  contrasena += minusculas[Math.floor(Math.random() * minusculas.length)];
-  contrasena += numeros[Math.floor(Math.random() * numeros.length)];
-  contrasena += especiales[Math.floor(Math.random() * especiales.length)];
-
-  for (let i = 4; i < 12; i++) {
-    contrasena += todos[Math.floor(Math.random() * todos.length)];
-  }
-
-  return contrasena
-    .split('')
-    .sort(() => Math.random() - 0.5)
-    .join('');
-};
+import { generarContrasena, hashearContrasena } from '../utilidades/contrasena.utilidad.mjs';
 
 /**
  * @param {import("express").Request} request
@@ -69,7 +46,7 @@ export const crearUsuario = async (request, response) => {
     }
 
     const contrasenaGenerada = generarContrasena();
-    const contrasenaEncriptada = await bcrypt.hash(contrasenaGenerada, 10);
+    const contrasenaEncriptada = await hashearContrasena(contrasenaGenerada);
 
     const usuarioNuevo = await Usuario.create(
       { id: crypto.randomUUID(), correo, contrasena: contrasenaEncriptada, rol },
