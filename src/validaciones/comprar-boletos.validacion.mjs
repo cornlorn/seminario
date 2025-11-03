@@ -16,8 +16,8 @@ export const validarCompraBoletos = [
   body('boletos.*.numero')
     .notEmpty()
     .withMessage('El número es obligatorio')
-    .isInt({ min: 0, max: 99 })
-    .withMessage('El número debe estar entre 0 y 99'),
+    .isInt({ min: 0, max: 999 })
+    .withMessage('El número debe estar entre 0 y 999'),
 
   body('boletos.*.monto')
     .notEmpty()
