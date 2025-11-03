@@ -16,11 +16,53 @@ Incluye autenticación JWT, manejo de usuarios, administración, carga de avatar
 
 ---
 
-Archivos raíz relevantes:
+## 📁 Estructura del proyecto
 
-- [`swagger.mjs`](swagger.mjs) — Configuración de la documentación OpenAPI
-- [`package.json`](package.json) — Scripts y dependencias
-- [`.env`](.env) — Variables de entorno
+```
+src/
+├── config/          # Configuración (database, email, multer, swagger)
+├── constants/       # Constantes globales (roles, estados, etc.)
+├── controllers/     # Controladores de rutas
+│   ├── auth/       # Controladores de autenticación
+│   └── avatar/     # Controladores de avatar
+├── middlewares/     # Middlewares (auth, validation, error-handler)
+├── models/          # Modelos de Sequelize
+├── routes/          # Definición de rutas
+├── services/        # Lógica de negocio
+│   ├── accounts/   # Servicios de cuentas
+│   ├── email/      # Servicios de correo electrónico
+│   │   └── templates/  # Plantillas HTML de correos
+│   └── games/      # Servicios de juegos
+├── utils/           # Utilidades reutilizables
+├── validations/     # Validaciones de express-validator
+└── index.js         # Punto de entrada de la aplicación
+```
+
+---
+
+## 📝 Convenciones de código
+
+### Nomenclatura de archivos
+
+El proyecto sigue convenciones de nombres en inglés con guiones para separar palabras:
+
+- **Rutas:** `*.routes.js` (ej: `users.routes.js`)
+- **Controladores:** `*.controller.js` (ej: `login.controller.js`)
+- **Modelos:** `*.model.js` (ej: `user.model.js`)
+- **Servicios:** `*.service.js` (ej: `admin.service.js`)
+- **Utilidades:** `*.util.js` (ej: `password.util.js`)
+- **Validaciones:** `*.validation.js` (ej: `login.validation.js`)
+- **Middlewares:** `*.middleware.js` (ej: `auth.middleware.js`)
+- **Configuración:** `*.config.js` (ej: `database.config.js`)
+- **Plantillas:** `*.template.js` (ej: `registration.template.js`)
+- **Emails:** `*.email.js` (ej: `registration.email.js`)
+
+### Convenciones generales
+
+- Nombres de archivos en minúsculas con guiones (`kebab-case`)
+- Nombres de carpetas en plural cuando contienen múltiples elementos del mismo tipo
+- Constantes globales centralizadas en `src/constants/`
+- Manejo de errores centralizado en middleware global
 
 ---
 
@@ -67,7 +109,7 @@ Instalar dependencias:
 npm install
 ```
 
-Modo desarrollo:
+Modo desarrollo (con recarga automática):
 
 ```bash
 npm run dev
@@ -79,11 +121,31 @@ Modo producción:
 npm start
 ```
 
+Formatear código:
+
+```bash
+npm run format
+```
+
 ---
 
 ## 🧠 Notas útiles
 
 - Los archivos subidos se almacenan en `public/usuarios/<id>`
-- El servidor expone `/public` como ruta estática
+- El servidor expone `/avatars` como ruta estática para los avatares
 - Si algo falla en el arranque, revisa que las variables `.env` estén completas
-- Las relaciones entre modelos están definidas en [`src/modelos/index.mjs`](src/modelos/index.mjs)
+- Las relaciones entre modelos están definidas en [`src/models/index.js`](src/models/index.js)
+- La documentación de la API está disponible en `/api/docs` cuando el servidor está corriendo
+- El manejo de errores global se encuentra en [`src/middlewares/error-handler.middleware.js`](src/middlewares/error-handler.middleware.js)
+
+---
+
+## 🔐 Roles del sistema
+
+El sistema maneja tres roles principales:
+
+- **Administrador:** Gestión completa del sistema
+- **Vendedor:** Venta de boletos y comisiones
+- **Jugador:** Compra de boletos y gestión de saldo
+
+Los roles están centralizados en [`src/constants/roles.constants.js`](src/constants/roles.constants.js)

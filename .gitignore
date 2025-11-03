@@ -1,14 +1,40 @@
 # Node
 node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # Variables de entorno
 .env
+.env.local
+.env.*.local
 
 # Archivos del sistema
 .DS_Store
+Thumbs.db
 
-# Archivos públicos
-public
+# Archivos públicos (avatares subidos)
+public/
 
 # Editor configurations
-.vscode
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Logs
+logs/
+*.log
+
+# Build artifacts
+dist/
+build/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Coverage
+coverage/
+.nyc_output/

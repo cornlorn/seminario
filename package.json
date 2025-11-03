@@ -2,8 +2,9 @@
   "name": "seminario",
   "version": "1.0.0",
   "scripts": {
-    "dev": "node --watch src/index.mjs",
-    "start": "node src/index.mjs"
+    "dev": "node --watch src/index.js",
+    "start": "node src/index.js",
+    "format": "prettier --write \"src/**/*.js\""
   },
   "dependencies": {
     "bcrypt": "6.0.0",
