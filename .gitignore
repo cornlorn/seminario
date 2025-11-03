@@ -9,3 +9,6 @@ node_modules
 
 # Archivos públicos
 public
+
+# Editor configurations
+.vscode

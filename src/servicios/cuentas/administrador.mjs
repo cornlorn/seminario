@@ -1,6 +1,6 @@
-import bcrypt from 'bcrypt';
 import { sequelize } from '../../config/database.config.mjs';
 import { Administrador, Usuario } from '../../modelos/index.mjs';
+import { hashearContrasena } from '../../utilidades/contrasena.utilidad.mjs';
 
 const { ADMIN_USER, ADMIN_PASS, ADMIN_NAME } = process.env;
 
@@ -30,7 +30,7 @@ export const administrador = async () => {
       const usuarioUUID = crypto.randomUUID();
 
       await Usuario.create(
-        { id: usuarioUUID, correo: ADMIN_USER, contrasena: await bcrypt.hash(ADMIN_PASS, 10), rol: 'Administrador' },
+        { id: usuarioUUID, correo: ADMIN_USER, contrasena: await hashearContrasena(ADMIN_PASS), rol: 'Administrador' },
         { transaction: transaccion },
       );
 

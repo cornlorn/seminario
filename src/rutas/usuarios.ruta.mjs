@@ -5,7 +5,7 @@ import { registrar } from '../controladores/auth/registrar.controlador.mjs';
 import { restablecer } from '../controladores/auth/restablecer.controlador.mjs';
 import { solicitar } from '../controladores/auth/solicitar.controlador.mjs';
 import { actualizar } from '../controladores/avatar/actualizar.controlador.mjs';
-import { eliminar } from '../controladores/avatar/eliminar.controller.mjs';
+import { eliminar } from '../controladores/avatar/eliminar.controlador.mjs';
 import { miPerfil } from '../controladores/perfil.controlador.mjs';
 import { autenticar } from '../middlewares/auth.middleware.mjs';
 import { manejarErroresMulter, subirAvatar } from '../middlewares/multer.middleware.mjs';
