@@ -2,6 +2,12 @@ import { sequelize } from '../config/database.config.mjs';
 import { Billetera, Jugador, Notificacion, Transaccion, Usuario, Vendedor } from '../modelos/index.mjs';
 import { correoDepositoSaldo } from '../servicios/correo/deposito-saldo.correo.mjs';
 import { correoRetiroSaldo } from '../servicios/correo/retiro-saldo.correo.mjs';
+import { formatearMoneda } from '../utilidades/respuesta.utilidad.mjs';
+import {
+  crearDatosNotificacion,
+  crearDatosTransaccion,
+  validarMontoConLimites,
+} from '../utilidades/transaccion.utilidad.mjs';
 
 export const MONTOS_PREDETERMINADOS = [25, 50, 100, 200, 500, 1000];
 
@@ -20,22 +26,12 @@ export const agregarSaldo = async (request, response) => {
     const { correo_jugador, monto } = request.body;
     const vendedorUsuarioId = request.usuario.id;
 
-    const montoFloat = parseFloat(monto);
-
-    if (isNaN(montoFloat) || montoFloat <= 0) {
+    const validacion = validarMontoConLimites(monto, { min: MONTO_MINIMO_DEPOSITO, max: MONTO_MAXIMO_DEPOSITO });
+    if (!validacion.valido) {
       await transaction.rollback();
-      return response.status(400).json({ mensaje: 'El monto debe ser mayor a cero' });
+      return response.status(400).json({ mensaje: validacion.error });
     }
-
-    if (montoFloat < MONTO_MINIMO_DEPOSITO) {
-      await transaction.rollback();
-      return response.status(400).json({ mensaje: `El monto mínimo de depósito es L${MONTO_MINIMO_DEPOSITO}` });
-    }
-
-    if (montoFloat > MONTO_MAXIMO_DEPOSITO) {
-      await transaction.rollback();
-      return response.status(400).json({ mensaje: `El monto máximo de depósito es L${MONTO_MAXIMO_DEPOSITO}` });
-    }
+    const montoFloat = validacion.montoFloat;
 
     const vendedor = await Vendedor.findOne({
       where: { usuario: vendedorUsuarioId },
@@ -68,23 +64,19 @@ export const agregarSaldo = async (request, response) => {
     await billetera.update({ saldo: saldoNuevo }, { transaction });
 
     const comision = (montoFloat * parseFloat(vendedor.comision_porcentaje)) / 100;
+    const vendedorNombre = `${vendedor.nombre} ${vendedor.apellido}`;
 
     const transaccionJugador = await Transaccion.create(
-      {
-        id: crypto.randomUUID(),
+      crearDatosTransaccion({
         usuario: usuarioJugador.id,
         tipo: 'Deposito',
-        concepto: `Depósito realizado por ${vendedor.nombre} ${vendedor.apellido}`,
+        concepto: `Depósito realizado por ${vendedorNombre}`,
         monto: montoFloat,
-        saldo_anterior: saldoAnterior,
-        saldo_nuevo: saldoNuevo,
+        saldoAnterior,
+        saldoNuevo,
         vendedor: vendedor.id,
-        metadata: {
-          vendedor_id: vendedor.id,
-          vendedor_nombre: `${vendedor.nombre} ${vendedor.apellido}`,
-          comision: comision,
-        },
-      },
+        metadata: { vendedor_id: vendedor.id, vendedor_nombre: vendedorNombre, comision: comision },
+      }),
       { transaction },
     );
 
@@ -97,17 +89,13 @@ export const agregarSaldo = async (request, response) => {
     );
 
     await Notificacion.create(
-      {
-        id: crypto.randomUUID(),
+      crearDatosNotificacion({
         usuario: usuarioJugador.id,
-        tipo: 'Sistema',
         asunto: 'Depósito realizado',
-        mensaje: `Se ha agregado L${montoFloat.toFixed(2)} a tu cuenta. Nuevo saldo: L${saldoNuevo.toFixed(2)}`,
-        leida: false,
-        enviada: false,
+        mensaje: `Se ha agregado L${formatearMoneda(montoFloat)} a tu cuenta. Nuevo saldo: L${formatearMoneda(saldoNuevo)}`,
         referencia: transaccionJugador.id,
-        metadata: { monto: montoFloat, vendedor: `${vendedor.nombre} ${vendedor.apellido}` },
-      },
+        metadata: { monto: montoFloat, vendedor: vendedorNombre },
+      }),
       { transaction },
     );
 
@@ -115,13 +103,7 @@ export const agregarSaldo = async (request, response) => {
 
     process.nextTick(async () => {
       try {
-        await correoDepositoSaldo(
-          usuarioJugador.correo,
-          jugador.nombre,
-          montoFloat,
-          saldoNuevo,
-          `${vendedor.nombre} ${vendedor.apellido}`,
-        );
+        await correoDepositoSaldo(usuarioJugador.correo, jugador.nombre, montoFloat, saldoNuevo, vendedorNombre);
 
         await Notificacion.update({ enviada: true }, { where: { referencia: transaccionJugador.id } });
       } catch (error) {
@@ -137,11 +119,11 @@ export const agregarSaldo = async (request, response) => {
           jugador: {
             nombre: `${jugador.nombre} ${jugador.apellido}`,
             correo: usuarioJugador.correo,
-            saldo_anterior: saldoAnterior.toFixed(2),
-            saldo_nuevo: saldoNuevo.toFixed(2),
+            saldo_anterior: formatearMoneda(saldoAnterior),
+            saldo_nuevo: formatearMoneda(saldoNuevo),
           },
-          monto_depositado: montoFloat.toFixed(2),
-          comision_ganada: comision.toFixed(2),
+          monto_depositado: formatearMoneda(montoFloat),
+          comision_ganada: formatearMoneda(comision),
           fecha: new Date(),
         },
       });
@@ -164,17 +146,12 @@ export const retirarSaldo = async (request, response) => {
     const { correo_jugador, monto } = request.body;
     const vendedorUsuarioId = request.usuario.id;
 
-    const montoFloat = parseFloat(monto);
-
-    if (isNaN(montoFloat) || montoFloat <= 0) {
+    const validacion = validarMontoConLimites(monto, { max: MONTO_MAXIMO_RETIRO });
+    if (!validacion.valido) {
       await transaction.rollback();
-      return response.status(400).json({ mensaje: 'El monto debe ser mayor a cero' });
+      return response.status(400).json({ mensaje: validacion.error });
     }
-
-    if (montoFloat > MONTO_MAXIMO_RETIRO) {
-      await transaction.rollback();
-      return response.status(400).json({ mensaje: `El monto máximo de retiro es L${MONTO_MAXIMO_RETIRO}` });
-    }
+    const montoFloat = validacion.montoFloat;
 
     const vendedor = await Vendedor.findOne({
       where: { usuario: vendedorUsuarioId },
@@ -207,42 +184,39 @@ export const retirarSaldo = async (request, response) => {
       await transaction.rollback();
       return response
         .status(400)
-        .json({ mensaje: `Saldo insuficiente. El jugador tiene L${saldoAnterior.toFixed(2)} disponible` });
+        .json({ mensaje: `Saldo insuficiente. El jugador tiene L${formatearMoneda(saldoAnterior)} disponible` });
     }
 
     const saldoNuevo = saldoAnterior - montoFloat;
 
     await billetera.update({ saldo: saldoNuevo }, { transaction });
 
+    const vendedorNombre = `${vendedor.nombre} ${vendedor.apellido}`;
+
     const transaccionJugador = await Transaccion.create(
-      {
-        id: crypto.randomUUID(),
+      crearDatosTransaccion({
         usuario: usuarioJugador.id,
         tipo: 'Retiro',
-        concepto: `Retiro procesado por ${vendedor.nombre} ${vendedor.apellido}`,
+        concepto: `Retiro procesado por ${vendedorNombre}`,
         monto: -montoFloat,
-        saldo_anterior: saldoAnterior,
-        saldo_nuevo: saldoNuevo,
+        saldoAnterior,
+        saldoNuevo,
         vendedor: vendedor.id,
-        metadata: { vendedor_id: vendedor.id, vendedor_nombre: `${vendedor.nombre} ${vendedor.apellido}` },
-      },
+        metadata: { vendedor_id: vendedor.id, vendedor_nombre: vendedorNombre },
+      }),
       { transaction },
     );
 
     await vendedor.update({ total_retirado: parseFloat(vendedor.total_retirado) + montoFloat }, { transaction });
 
     await Notificacion.create(
-      {
-        id: crypto.randomUUID(),
+      crearDatosNotificacion({
         usuario: usuarioJugador.id,
-        tipo: 'Sistema',
         asunto: 'Retiro realizado',
-        mensaje: `Se ha retirado L${montoFloat.toFixed(2)} de tu cuenta. Nuevo saldo: L${saldoNuevo.toFixed(2)}`,
-        leida: false,
-        enviada: false,
+        mensaje: `Se ha retirado L${formatearMoneda(montoFloat)} de tu cuenta. Nuevo saldo: L${formatearMoneda(saldoNuevo)}`,
         referencia: transaccionJugador.id,
-        metadata: { monto: montoFloat, vendedor: `${vendedor.nombre} ${vendedor.apellido}` },
-      },
+        metadata: { monto: montoFloat, vendedor: vendedorNombre },
+      }),
       { transaction },
     );
 
@@ -250,13 +224,7 @@ export const retirarSaldo = async (request, response) => {
 
     process.nextTick(async () => {
       try {
-        await correoRetiroSaldo(
-          usuarioJugador.correo,
-          jugador.nombre,
-          montoFloat,
-          saldoNuevo,
-          `${vendedor.nombre} ${vendedor.apellido}`,
-        );
+        await correoRetiroSaldo(usuarioJugador.correo, jugador.nombre, montoFloat, saldoNuevo, vendedorNombre);
 
         await Notificacion.update({ enviada: true }, { where: { referencia: transaccionJugador.id } });
       } catch (error) {
@@ -272,10 +240,10 @@ export const retirarSaldo = async (request, response) => {
           jugador: {
             nombre: `${jugador.nombre} ${jugador.apellido}`,
             correo: usuarioJugador.correo,
-            saldo_anterior: saldoAnterior.toFixed(2),
-            saldo_nuevo: saldoNuevo.toFixed(2),
+            saldo_anterior: formatearMoneda(saldoAnterior),
+            saldo_nuevo: formatearMoneda(saldoNuevo),
           },
-          monto_retirado: montoFloat.toFixed(2),
+          monto_retirado: formatearMoneda(montoFloat),
           fecha: new Date(),
         },
       });
@@ -320,7 +288,7 @@ export const buscarJugador = async (request, response) => {
           correo: usuario.correo,
           telefono: jugador.telefono,
           avatar: jugador.avatar,
-          saldo_actual: parseFloat(jugador.billetera.saldo).toFixed(2),
+          saldo_actual: formatearMoneda(jugador.billetera.saldo),
           fecha_registro: usuario.creado,
         },
       });
@@ -377,8 +345,8 @@ export const misOperaciones = async (request, response) => {
         nombre: `${t.usuarioDetalles.jugador.nombre} ${t.usuarioDetalles.jugador.apellido}`,
         correo: t.usuarioDetalles.correo,
       },
-      monto: parseFloat(t.monto).toFixed(2),
-      comision: t.metadata?.comision ? parseFloat(t.metadata.comision).toFixed(2) : null,
+      monto: formatearMoneda(t.monto),
+      comision: t.metadata?.comision ? formatearMoneda(t.metadata.comision) : null,
       fecha: t.creado,
     }));
 
@@ -419,10 +387,10 @@ export const misEstadisticasVendedor = async (request, response) => {
       .json({
         mensaje: 'Estadísticas obtenidas exitosamente',
         estadisticas: {
-          depositos: { cantidad: totalDepositos, total: parseFloat(vendedor.total_depositado).toFixed(2) },
-          retiros: { cantidad: totalRetiros, total: parseFloat(vendedor.total_retirado).toFixed(2) },
-          comisiones: { total: parseFloat(vendedor.total_comisiones).toFixed(2) },
-          comision_porcentaje: parseFloat(vendedor.comision_porcentaje).toFixed(2) + '%',
+          depositos: { cantidad: totalDepositos, total: formatearMoneda(vendedor.total_depositado) },
+          retiros: { cantidad: totalRetiros, total: formatearMoneda(vendedor.total_retirado) },
+          comisiones: { total: formatearMoneda(vendedor.total_comisiones) },
+          comision_porcentaje: formatearMoneda(vendedor.comision_porcentaje) + '%',
         },
       });
   } catch (error) {

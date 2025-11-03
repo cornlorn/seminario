@@ -1,6 +1,6 @@
-import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { Usuario } from '../../modelos/index.mjs';
+import { compararContrasena } from '../../utilidades/contrasena.utilidad.mjs';
 
 /**
  * @param {import("express").Request} request
@@ -16,7 +16,7 @@ export const ingresar = async (request, response) => {
       return response.status(401).json({ mensaje: 'Credenciales inválidas' });
     }
 
-    const contrasenaValida = await bcrypt.compare(contrasena, usuario.contrasena);
+    const contrasenaValida = await compararContrasena(contrasena, usuario.contrasena);
     if (!contrasenaValida) {
       return response.status(401).json({ mensaje: 'Credenciales inválidas' });
     }
