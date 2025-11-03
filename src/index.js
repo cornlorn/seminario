@@ -6,6 +6,7 @@ import swaggerUI from 'swagger-ui-express';
 import { specs } from './config/swagger.config.js';
 import { transportador } from './config/email.config.js';
 import { sequelize } from './config/database.config.js';
+import { errorHandler, notFoundHandler } from './middlewares/error-handler.middleware.js';
 import { rutas } from './routes/index.js';
 import { administrador } from './services/accounts/admin.service.js';
 import { iniciarEjecucionAutomatica } from './services/execute.service.js';
@@ -25,6 +26,10 @@ app.use(morgan('dev'));
 app.use('/api', rutas);
 app.use('/api/docs', swaggerUI.serve, swaggerUI.setup(specs));
 app.use('/avatars', express.static('public/usuarios'));
+
+// Error handling middlewares (must be after routes)
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 try {
   await sequelize.authenticate();

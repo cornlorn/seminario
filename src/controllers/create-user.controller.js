@@ -1,4 +1,5 @@
 import { sequelize } from '../config/database.config.js';
+import { ROLES, VALID_ROLES, isValidRole } from '../constants/roles.constants.js';
 import { Administrador, Billetera, Jugador, Usuario, Vendedor } from '../models/index.js';
 import { correoCredencialesNuevaCuenta } from '../services/email/account-credentials.email.js';
 import { generarContrasena, hashearContrasena } from '../utils/password.util.js';
@@ -13,10 +14,11 @@ export const crearUsuario = async (request, response) => {
   const transaction = await sequelize.transaction();
 
   try {
-    const rolesValidos = ['Administrador', 'Vendedor', 'Jugador'];
-    if (!rolesValidos.includes(rol)) {
+    if (!isValidRole(rol)) {
       await transaction.rollback();
-      return response.status(400).json({ mensaje: 'Rol inválido. Debe ser Administrador, Vendedor o Jugador' });
+      return response.status(400).json({ 
+        mensaje: `Rol inválido. Debe ser ${VALID_ROLES.join(', ')}` 
+      });
     }
 
     const usuarioExistente = await Usuario.findOne({ where: { correo }, transaction });
@@ -26,19 +28,19 @@ export const crearUsuario = async (request, response) => {
       return response.status(409).json({ mensaje: 'El correo electrónico ya está registrado' });
     }
 
-    if (rol === 'Administrador' && !nombre) {
+    if (rol === ROLES.ADMIN && !nombre) {
       await transaction.rollback();
       return response.status(400).json({ mensaje: 'El nombre es requerido para administradores' });
     }
 
-    if (rol === 'Vendedor') {
+    if (rol === ROLES.SELLER) {
       if (!nombre || !apellido || !telefono) {
         await transaction.rollback();
         return response.status(400).json({ mensaje: 'El nombre, apellido y teléfono son requeridos para vendedores' });
       }
     }
 
-    if (rol === 'Jugador') {
+    if (rol === ROLES.PLAYER) {
       if (!nombre || !apellido || !telefono) {
         await transaction.rollback();
         return response.status(400).json({ mensaje: 'El nombre, apellido y teléfono son requeridos para jugadores' });
@@ -63,7 +65,7 @@ export const crearUsuario = async (request, response) => {
       },
     };
 
-    if (rol === 'Administrador') {
+    if (rol === ROLES.ADMIN) {
       const adminNuevo = await Administrador.create(
         { id: crypto.randomUUID(), usuario: usuarioNuevo.id, nombre },
         { transaction },
@@ -72,7 +74,7 @@ export const crearUsuario = async (request, response) => {
       respuesta.perfil = { id: adminNuevo.id, nombre: adminNuevo.nombre };
     }
 
-    if (rol === 'Vendedor') {
+    if (rol === ROLES.SELLER) {
       const comisionPorcentaje = comision ? parseFloat(comision) : 2.0;
 
       if (comisionPorcentaje < 0 || comisionPorcentaje > 100) {
@@ -103,7 +105,7 @@ export const crearUsuario = async (request, response) => {
       };
     }
 
-    if (rol === 'Jugador') {
+    if (rol === ROLES.PLAYER) {
       const jugadorNuevo = await Jugador.create(
         {
           id: crypto.randomUUID(),

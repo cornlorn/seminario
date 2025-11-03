@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import { ROLES } from '../constants/roles.constants.js';
 import { Usuario } from '../models/index.js';
 import { verificarRoles } from '../utils/roles.util.js';
 
@@ -36,6 +37,6 @@ export const autenticar = async (request, response, next) => {
 };
 
 // Usar utilidad de roles para eliminar código repetitivo
-export const verificarAdministrador = verificarRoles(['Administrador']);
-export const verificarVendedor = verificarRoles(['Vendedor']);
-export const verificarAdminOVendedor = verificarRoles(['Administrador', 'Vendedor']);
+export const verificarAdministrador = verificarRoles([ROLES.ADMIN]);
+export const verificarVendedor = verificarRoles([ROLES.SELLER]);
+export const verificarAdminOVendedor = verificarRoles([ROLES.ADMIN, ROLES.SELLER]);

@@ -1,4 +1,5 @@
 import { sequelize } from '../../config/database.config.js';
+import { ROLES } from '../../constants/roles.constants.js';
 import { Administrador, Usuario } from '../../models/index.js';
 import { hashearContrasena } from '../../utils/password.util.js';
 
@@ -12,7 +13,7 @@ if (!ADMIN_USER || !ADMIN_PASS || !ADMIN_NAME) {
 export const administrador = async () => {
   try {
     const [adminExistente, usuarioExistente] = await Promise.all([
-      Usuario.findOne({ where: { rol: 'Administrador' } }),
+      Usuario.findOne({ where: { rol: ROLES.ADMIN } }),
       Usuario.findOne({ where: { correo: ADMIN_USER } }),
     ]);
 
@@ -30,7 +31,7 @@ export const administrador = async () => {
       const usuarioUUID = crypto.randomUUID();
 
       await Usuario.create(
-        { id: usuarioUUID, correo: ADMIN_USER, contrasena: await hashearContrasena(ADMIN_PASS), rol: 'Administrador' },
+        { id: usuarioUUID, correo: ADMIN_USER, contrasena: await hashearContrasena(ADMIN_PASS), rol: ROLES.ADMIN },
         { transaction: transaccion },
       );
 

@@ -1,4 +1,5 @@
 import { body } from 'express-validator';
+import { VALID_ROLES } from '../constants/roles.constants.js';
 
 export const validarCrearUsuario = [
   body('correo')
@@ -11,8 +12,8 @@ export const validarCrearUsuario = [
   body('rol')
     .notEmpty()
     .withMessage('El rol es obligatorio')
-    .isIn(['Administrador', 'Vendedor', 'Jugador'])
-    .withMessage('El rol debe ser Administrador, Vendedor o Jugador'),
+    .isIn(VALID_ROLES)
+    .withMessage(`El rol debe ser ${VALID_ROLES.join(', ')}`),
 
   body('nombre')
     .notEmpty()
